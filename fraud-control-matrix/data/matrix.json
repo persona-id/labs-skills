@@ -1,0 +1,5649 @@
+{
+ "source": {
+  "name": "Persona Research — Identity Fraud Control Matrix",
+  "url": "https://labs.withpersona.com/fraud-controls",
+  "snapshot": "October 2026"
+ },
+ "stages": [
+  {
+   "id": "AT01",
+   "name": "Session and environment",
+   "blurb": "The runtime the verification opens in, before any capture",
+   "note": "Everything at this stage is asserted by the client. It is where an adversary prepares the ground for a later technique rather than attacking the evidence itself, which is why these signals are treated as risk indicators rather than proof.",
+   "short": "Session",
+   "assumes": "the device and session are what they claim to be"
+  },
+  {
+   "id": "AT02",
+   "name": "Presentation at capture",
+   "blurb": "Artifacts held up in front of a real camera",
+   "note": "This is the stage ISO/IEC 30107-3 addresses. The sensor is genuinely the source of the image, so sample-analysis signals apply in full and a laboratory result is meaningful evidence about this column.",
+   "short": "Presentation",
+   "assumes": "the face or document in front of the camera is real"
+  },
+  {
+   "id": "AT03",
+   "name": "Capture path compromise",
+   "blurb": "The camera is bypassed or replaced",
+   "note": "This stage invalidates the assumption every sample-analysis family rests on: that the image is what the camera saw. A presentation attack detection result says nothing about this column, however strong it is.",
+   "short": "Capture path",
+   "assumes": "the image is what the camera saw"
+  },
+  {
+   "id": "AT04",
+   "name": "Transport and submission",
+   "blurb": "Between the client and the service",
+   "note": "Attacks here do not need to produce convincing media at all. They reuse or substitute media that was already accepted. Session binding rather than image analysis is what closes them.",
+   "short": "Transport",
+   "assumes": "what arrives is what this session captured"
+  },
+  {
+   "id": "AT05",
+   "name": "Evidence and identity",
+   "blurb": "What is claimed, not how it was captured",
+   "note": "A technique at this stage can pass every capture and biometric control, because nothing about the capture is wrong. The evidence itself is what is false, or belongs to someone else.",
+   "short": "Evidence",
+   "assumes": "the evidence is genuine, and it belongs to them"
+  },
+  {
+   "id": "AT06",
+   "name": "Post-decision lifecycle",
+   "blurb": "After the verification has completed",
+   "note": "Outside the verification event entirely. Every control in the earlier columns returned a correct result; what changed is who controls the account. Only lifecycle monitoring reaches this stage.",
+   "short": "Lifecycle",
+   "assumes": "the person who verified still holds the account"
+  }
+ ],
+ "controls": [
+  {
+   "id": "C01",
+   "name": "Guided capture",
+   "layer": "Capture",
+   "desc": "Framing, distance, and lighting guidance so correctable problems are resolved before submission.",
+   "limit": "Requires a Persona-controlled capture surface. Does not apply to a server-supplied image.",
+   "captureOnly": true
+  },
+  {
+   "id": "C02",
+   "name": "Ordered frame retention",
+   "layer": "Capture",
+   "desc": "Frames retained in order with relative timing, so motion and temporal analysis is possible at all.",
+   "limit": "A single-still integration removes this and the signal families that depend on it.",
+   "captureOnly": true
+  },
+  {
+   "id": "C03",
+   "name": "Capture-time challenge",
+   "layer": "Capture",
+   "desc": "A value chosen by the server after the session opens, such as a lighting pattern, a movement, or an on-screen target, which prepared media cannot have anticipated.",
+   "limit": "Adds friction and needs an accessible alternative. Simple challenges can be performed live by current tooling.",
+   "captureOnly": true
+  },
+  {
+   "id": "C04",
+   "name": "Platform attestation",
+   "layer": "Capture integrity",
+   "desc": "A signed statement from the operating system or app ecosystem about device integrity and application authenticity.",
+   "limit": "Requires a native app on a supported platform. Not available in a browser flow.",
+   "captureOnly": true
+  },
+  {
+   "id": "C05",
+   "name": "Camera and driver enumeration",
+   "layer": "Capture integrity",
+   "desc": "Enumeration of camera devices and identification of virtual, redirected, or software-backed sources.",
+   "limit": "Determined adversaries can present a virtual source that reports plausibly.",
+   "captureOnly": true
+  },
+  {
+   "id": "C06",
+   "name": "Runtime environment assessment",
+   "layer": "Capture integrity",
+   "desc": "Indicators of emulation, virtualization, rooting or jailbreaking, instrumentation frameworks, and repackaged applications.",
+   "limit": "Normal for researchers, developers, and some privacy-conscious users. A risk indicator, not proof.",
+   "captureOnly": true
+  },
+  {
+   "id": "C07",
+   "name": "Sensor metadata plausibility",
+   "layer": "Capture integrity",
+   "desc": "Whether declared resolution, optical characteristics, and encoding are mutually consistent and consistent with the claimed device.",
+   "limit": "Metadata can be forged; strength comes from internal consistency across many fields at once.",
+   "captureOnly": true
+  },
+  {
+   "id": "C08",
+   "name": "Frame timing analysis",
+   "layer": "Capture integrity",
+   "desc": "Injected media frequently has a cadence too regular, too fast, or otherwise inconsistent with a live sensor under real conditions.",
+   "limit": "Needs a frame sequence. Poor network conditions produce legitimate irregularity.",
+   "captureOnly": true
+  },
+  {
+   "id": "C09",
+   "name": "Session binding",
+   "layer": "Transport",
+   "desc": "Media bound server-side to the session it was captured in, so a valid submission cannot be reused in another session or against another identity.",
+   "limit": "Closes replay, not first-use submission of prepared media.",
+   "captureOnly": false
+  },
+  {
+   "id": "C10",
+   "name": "Transport protection",
+   "layer": "Transport",
+   "desc": "Integrity and confidentiality protection in transit, so substitution requires compromising the client rather than the connection.",
+   "limit": "Does not address a compromised client, which is the more common case.",
+   "captureOnly": false
+  },
+  {
+   "id": "C11",
+   "name": "Document authenticity analysis",
+   "layer": "Evidence",
+   "desc": "Classification, template and layout consistency, typography, security elements, and digital or physical tamper detection.",
+   "limit": "Can only assess what a camera can see. A well-made counterfeit reproduces exactly that.",
+   "captureOnly": false
+  },
+  {
+   "id": "C12",
+   "name": "Encoded data validation",
+   "layer": "Evidence",
+   "desc": "MRZ and barcode structure, checksums, formatting, and consistency between visible and machine-readable zones.",
+   "limit": "Present only on documents that carry an encoded zone.",
+   "captureOnly": false
+  },
+  {
+   "id": "C13",
+   "name": "Cryptographic credential validation",
+   "layer": "Evidence",
+   "desc": "Chip or wallet credential signature verified against a trust chain rooted in the issuing authority, with data-group integrity checked.",
+   "limit": "Confirms issuance, not issuance quality, current status, or who is presenting it.",
+   "captureOnly": false
+  },
+  {
+   "id": "C14",
+   "name": "Authoritative source corroboration",
+   "layer": "Evidence",
+   "desc": "Claimed attributes compared against records held by an issuing authority or another source reliable for the use case.",
+   "limit": "Coverage is thinner for younger people, recent arrivals, and thin-file populations. Breached attributes may also be known to an attacker.",
+   "captureOnly": false
+  },
+  {
+   "id": "C15",
+   "name": "Face comparison",
+   "layer": "Binding",
+   "desc": "Similarity between the live capture and a trusted reference, assessed at an operating point chosen for the use case.",
+   "limit": "Inherits the assurance of the reference. A comparison against a forgery confirms a resemblance to a forgery.",
+   "captureOnly": false
+  },
+  {
+   "id": "C16",
+   "name": "Liveness and PAD ensemble",
+   "layer": "Binding",
+   "desc": "Specialized components across signal families A to G, combined into a calibrated result with reason categories.",
+   "limit": "Assumes the image is what the camera saw. Not an injection control.",
+   "captureOnly": false
+  },
+  {
+   "id": "C17",
+   "name": "Device and network context",
+   "layer": "Context",
+   "desc": "Device profile and novelty, connection origin, anonymization services, hosting providers, and consistency with prior sessions.",
+   "limit": "Probabilistic. Legitimate users travel, use privacy tools, and share infrastructure.",
+   "captureOnly": false
+  },
+  {
+   "id": "C18",
+   "name": "Velocity and repeated artifacts",
+   "layer": "Population",
+   "desc": "How often an attribute, document, biometric reference, device, or derived artifact recurs within a defined window.",
+   "limit": "Base rates vary by population. Households, public terminals, and assisted onboarding all produce legitimate recurrence.",
+   "captureOnly": false
+  },
+  {
+   "id": "C19",
+   "name": "Link and graph analysis",
+   "layer": "Population",
+   "desc": "Relationships across accounts and transactions, such as a shared face under different identities, one document across accounts, or common infrastructure and backgrounds.",
+   "limit": "Identifies relationships, not culpability. A ring that keeps attempts separate produces fewer edges.",
+   "captureOnly": false
+  },
+  {
+   "id": "C20",
+   "name": "Risk intelligence matching",
+   "layer": "Population",
+   "desc": "Comparison against known compromised, specimen, fraudulent, or customer-supplied risk information.",
+   "limit": "Depends on freshness. A match describes an artifact, not necessarily the person presenting it.",
+   "captureOnly": false
+  },
+  {
+   "id": "C21",
+   "name": "Human review",
+   "layer": "Policy",
+   "desc": "An escalation path for ambiguous, high-impact, or novel cases, with role-based access and auditable actions.",
+   "limit": "People are worse than models at judging well-made spoofs and borderline face matches. Scope review to judgments humans improve.",
+   "captureOnly": false
+  },
+  {
+   "id": "C22",
+   "name": "Lifecycle monitoring",
+   "layer": "Policy",
+   "desc": "Post-verification behavior, reverification triggers, and transaction controls that can revise a completed outcome.",
+   "limit": "Detects after the fact. Requires the customer to define what happens on a downstream notification.",
+   "captureOnly": false
+  },
+  {
+   "id": "C23",
+   "name": "Proportionate step-up",
+   "layer": "Policy",
+   "desc": "Requesting stronger or additional evidence when risk is elevated or existing evidence is insufficient for the transaction.",
+   "limit": "Friction has a measurable abandonment cost, distributed unevenly across a population.",
+   "captureOnly": false
+  },
+  {
+   "id": "C24",
+   "name": "Monitored exception path",
+   "layer": "Policy",
+   "desc": "A documented alternative route with human adjudication for people who cannot complete the standard flow, with its own controls and its own monitoring.",
+   "limit": "An unmonitored exception path tends to become the path attackers use, which is why it is listed as a control against the techniques that target it.",
+   "captureOnly": false
+  }
+ ],
+ "signals": [
+  {
+   "id": "A",
+   "name": "Material and texture response",
+   "desc": "Living skin scatters light beneath its surface and produces a characteristic distribution of fine texture, pore structure, and diffuse and specular reflection. Paper, glass, and silicone do not reproduce this faithfully at close range.",
+   "weakens": "resolution is low, compression is aggressive, the capture is distant, or the attacker picks matte materials and flattening light."
+  },
+  {
+   "id": "B",
+   "name": "Display and frequency artifacts",
+   "desc": "A screen replayed to a camera introduces artifacts a real scene does not: interference between the display grid and the sensor grid, banding from refresh rate against exposure, uneven backlight, clipped blacks, and bezel geometry.",
+   "weakens": "the attacker uses a high-density, high-refresh display, controls the angle, or crops out every device edge."
+  },
+  {
+   "id": "C",
+   "name": "Illumination and reflection consistency",
+   "desc": "Corneal highlights, shadow geometry across nose and brow, and light falloff are mutually consistent on a real face in a lit room. Where the flow controls the screen it can illuminate with a value chosen at capture time and check the reflected response.",
+   "weakens": "ambient light is very low or very strong, or the user wears glasses. Needs calibration across skin tones so sensitivity does not vary by group."
+  },
+  {
+   "id": "D",
+   "name": "Depth, parallax, and geometry",
+   "desc": "A flat artifact yields a flat scene. Small natural head movement produces relative displacement between near and far landmarks and a defocus gradient across the face; both are absent or wrong for a print or a screen.",
+   "weakens": "only a single still exists, no depth data is available, or the instrument is genuinely three-dimensional, as a fitted mask is."
+  },
+  {
+   "id": "E",
+   "name": "Motion and temporal consistency",
+   "desc": "Across ordered frames a live capture shows coherent landmark trajectories, continuous involuntary micro-motion, and plausible blink dynamics. Replayed and edited media often show loop points, duplicated frames, cuts, or motion too smooth to be human.",
+   "weakens": "the integration submits a single image rather than a sequence, which removes this family entirely."
+  },
+  {
+   "id": "F",
+   "name": "Anomalous signals",
+   "desc": "Anomaly detection identifies clusters of similar visual features across transactions and populations to reveal unusual or coordinated patterns. Effective against emerging synthetic media engines and new spoofing techniques, because it detects repeated characteristics without requiring every attack type to have been observed in advance.",
+   "weakens": "attacks are isolated, occur at low volume, or are distributed across long periods, conditions that reduce the clustering density needed to separate a coordinated pattern from normal variation."
+  },
+  {
+   "id": "G",
+   "name": "Generative and manipulation artifacts",
+   "desc": "Synthesized and swapped media leave traces of construction: blending seams at jaw and hairline, inconsistent detail in eyes and teeth, flicker in high-frequency regions, identity drift over a sequence, and statistical signatures from upsampling.",
+   "weakens": "the generator is newer than the detector. The fastest-moving family, which is why it must be paired with H."
+  },
+  {
+   "id": "H",
+   "name": "Capture-path and device context",
+   "desc": "Not image analysis at all. Which cameras the platform reports, whether a virtual driver is present, whether the runtime shows emulation or instrumentation, whether the platform will attest, whether metadata is plausible, and whether frames arrived in order.",
+   "weakens": "the integration supplies a finished image with no capture context, in which case none of these signals exist."
+  }
+ ],
+ "techniques": [
+  {
+   "id": "T1001",
+   "stage": "AT01",
+   "name": "Emulated or virtualized device",
+   "effort": "low",
+   "subs": [
+    "Mobile operating system emulator",
+    "Desktop virtual machine",
+    "Cloud device farm"
+   ],
+   "desc": "The verification is completed inside an emulator or virtual machine rather than on physical consumer hardware, giving the adversary full control of what the runtime reports and an easy path to feeding prepared media to the camera interface.",
+   "controls": [
+    "C06",
+    "C04",
+    "C17"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Treat as an elevated risk indicator rather than proof, since emulation is normal for developers and researchers. Where the flow requires it, block unsupported capture environments or step up to an alternate channel.",
+   "residual": "Attestation is unavailable in browser flows, so a web integration has materially weaker evidence here than a native one.",
+   "refs": [
+    "ENISA, Remote Identity Proofing: Attacks and Countermeasures"
+   ],
+   "tell": "path"
+  },
+  {
+   "id": "T1002",
+   "stage": "AT01",
+   "name": "Rooted or jailbroken device",
+   "effort": "low",
+   "subs": [],
+   "desc": "Privilege escalation on real hardware, which lets the adversary intercept or replace the camera interface, disable client-side protections, and modify the application at runtime while otherwise presenting as a genuine device.",
+   "controls": [
+    "C06",
+    "C04"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Step up to stronger evidence or a cryptographic credential, or route to review under the customer's configured policy.",
+   "residual": "Detection is an arms race against concealment tooling built specifically to defeat it.",
+   "refs": [],
+   "tell": "path"
+  },
+  {
+   "id": "T1003",
+   "stage": "AT01",
+   "name": "Repackaged application",
+   "effort": "moderate",
+   "subs": [
+    "Re-signed build",
+    "Patched capture module"
+   ],
+   "desc": "The published application is modified and re-signed so that client-side capture logic, guidance, or integrity checks behave differently while the submission still appears to come from the expected app.",
+   "controls": [
+    "C04",
+    "C06"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Refuse submissions from application instances the platform will not attest to, where the integration supports attestation.",
+   "residual": "Any control that relies on the client honestly describing itself is defeated here. Only platform-signed attestation resists it.",
+   "refs": [],
+   "tell": "path"
+  },
+  {
+   "id": "T1004",
+   "stage": "AT01",
+   "name": "Instrumentation and hooking",
+   "effort": "moderate",
+   "subs": [],
+   "desc": "A dynamic instrumentation framework attaches to the running process to intercept function calls, alter values in memory, or substitute the frames returned by a camera API without modifying the application binary.",
+   "controls": [
+    "C06",
+    "C04",
+    "C08"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Elevated risk; combine with capture-path provenance so that substituted frames are also assessed against what a real stream looks like.",
+   "residual": "Runtime detection and runtime concealment evolve together, and neither side stays ahead for long.",
+   "refs": [],
+   "tell": "path"
+  },
+  {
+   "id": "T1005",
+   "stage": "AT01",
+   "name": "Anonymized network origin",
+   "effort": "low",
+   "subs": [
+    "Commercial VPN",
+    "Hosting provider address",
+    "Residential proxy network"
+   ],
+   "desc": "The connection is routed to obscure the true origin or to place it in a geography consistent with the claimed identity, often as part of a wider effort to make many attempts appear unrelated.",
+   "controls": [
+    "C17",
+    "C18",
+    "C19"
+   ],
+   "signals": [],
+   "response": "Weak on its own, because privacy tools are ordinary. Informative in convergence: volume from one provider, or geography inconsistent with the phone number, document country, and address at once.",
+   "residual": "Residential proxy networks present as ordinary consumer connections and are hard to distinguish from them.",
+   "refs": [],
+   "tell": "none"
+  },
+  {
+   "id": "T1006",
+   "stage": "AT01",
+   "name": "Automation harness",
+   "effort": "low",
+   "subs": [],
+   "desc": "A script or browser automation driver completes the flow, allowing many attempts to be submitted quickly and allowing the adversary to probe systematically for the boundary of a control.",
+   "controls": [
+    "C17",
+    "C18",
+    "C23"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Rate-limit, require step up, and preserve the attempt pattern for analysis. Retry behavior is distinctively informative here.",
+   "residual": "A patient adversary pacing attempts below threshold produces a pattern that only a long window surfaces.",
+   "refs": [],
+   "tell": "path"
+  },
+  {
+   "id": "T2001",
+   "stage": "AT02",
+   "name": "Printed photograph",
+   "effort": "low",
+   "subs": [
+    "Flat print",
+    "Cut-out with apertures",
+    "Curved print to imply depth"
+   ],
+   "desc": "A printed image of the target face is held in front of the camera. The lowest-cost presentation attack, and still common because the source image is often freely available from social media or a stolen document.",
+   "controls": [
+    "C16",
+    "C03",
+    "C01",
+    "C02"
+   ],
+   "signals": [
+    "A",
+    "D",
+    "E"
+   ],
+   "response": "Retry with guided capture where the result is ambiguous; decline or review where the outcome is confident and the flow requires it.",
+   "residual": "Very low-resolution or heavily compressed captures suppress exactly the texture cues this depends on.",
+   "refs": [
+    "ISO/IEC 30107-3:2023"
+   ],
+   "tell": "image"
+  },
+  {
+   "id": "T2002",
+   "stage": "AT02",
+   "name": "Screen replay",
+   "effort": "low",
+   "subs": [
+    "Phone or tablet display",
+    "Desktop monitor",
+    "Looped video of the target"
+   ],
+   "desc": "A photograph or video of the target is replayed on a second display and filmed by the capture device, which can satisfy naive motion checks because the replayed subject genuinely moves and blinks.",
+   "controls": [
+    "C16",
+    "C03",
+    "C02",
+    "C01"
+   ],
+   "signals": [
+    "B",
+    "A",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "response": "Decline or route to review under policy. Where the signal is weak, a capture-time challenge the recording cannot anticipate resolves it.",
+   "residual": "A high-density, high-refresh display at a controlled angle with the bezel cropped out suppresses the strongest cues in family B.",
+   "refs": [
+    "ISO/IEC 30107-3:2023"
+   ],
+   "tell": "image"
+  },
+  {
+   "id": "T2003",
+   "stage": "AT02",
+   "name": "Wearable mask",
+   "effort": "moderate",
+   "subs": [
+    "Paper mask with eye and mouth apertures",
+    "Silicone, resin, or latex mask"
+   ],
+   "desc": "The adversary wears a representation of the target face, which defeats depth and parallax analysis because the instrument is genuinely three-dimensional and genuinely moves with a living wearer.",
+   "controls": [
+    "C16",
+    "C15"
+   ],
+   "signals": [
+    "A",
+    "C"
+   ],
+   "response": "Decline where confident. Step up to a cryptographic credential with holder binding where the flow supports it.",
+   "residual": "The family that resists this best is material and texture response, which weakens under poor optics, distance, and aggressive compression.",
+   "refs": [
+    "ISO/IEC 30107-3:2023"
+   ],
+   "tell": "image"
+  },
+  {
+   "id": "T2004",
+   "stage": "AT02",
+   "name": "Three-dimensional face model",
+   "effort": "high",
+   "subs": [
+    "Mannequin or bust",
+    "Printed 3D model"
+   ],
+   "desc": "A physical model of the target head is presented to the camera. Higher effort than a mask and less flexible, but it satisfies geometry checks and can be reused across many attempts.",
+   "controls": [
+    "C16",
+    "C03",
+    "C02"
+   ],
+   "signals": [
+    "A",
+    "C",
+    "E"
+   ],
+   "response": "Decline. A static model fails temporal and motion analysis even when it satisfies depth.",
+   "residual": "Rare in practice because the effort is poorly matched to the return, but relevant for high-value targeted attacks.",
+   "refs": [
+    "ISO/IEC 30107-3:2023"
+   ],
+   "tell": "image"
+  },
+  {
+   "id": "T2005",
+   "stage": "AT02",
+   "name": "Generated face re-filmed",
+   "effort": "moderate",
+   "subs": [],
+   "desc": "A synthesized or face-swapped video is rendered, displayed, and filmed by the real capture device. This combines the flexibility of generative media with a genuine camera path, so capture-integrity signals show nothing wrong.",
+   "controls": [
+    "C16",
+    "C03",
+    "C02"
+   ],
+   "signals": [
+    "G",
+    "B",
+    "A",
+    "C",
+    "F"
+   ],
+   "response": "Step up to stronger evidence or a cryptographic credential, review, or decline. Population signals often reveal reuse across attempts.",
+   "residual": "Generative artifact detection degrades as generators improve, and this technique deliberately hides behind a legitimate capture path.",
+   "refs": [
+    "ENISA, Remote Identity Proofing: Attacks and Countermeasures"
+   ],
+   "tell": "image"
+  },
+  {
+   "id": "T2006",
+   "stage": "AT02",
+   "name": "Counterfeit document at camera",
+   "effort": "moderate",
+   "subs": [
+    "Printed reproduction",
+    "Screen-displayed document image"
+   ],
+   "desc": "A fabricated or altered document is presented to the camera during document capture, relying on the fact that visual analysis can only assess what the camera can see.",
+   "controls": [
+    "C11",
+    "C12",
+    "C13",
+    "C14",
+    "C01"
+   ],
+   "signals": [
+    "A",
+    "B"
+   ],
+   "response": "Request recapture where quality is the issue; step up to issuing source or chip validation where authenticity is the question.",
+   "residual": "A well-made counterfeit reproduces the visible design faithfully. Cryptographic or source validation is what introduces evidence the forger does not control.",
+   "refs": [],
+   "tell": "image"
+  },
+  {
+   "id": "T3001",
+   "stage": "AT03",
+   "name": "Virtual camera driver",
+   "effort": "low",
+   "subs": [
+    "Desktop virtual webcam",
+    "Mobile virtual camera module"
+   ],
+   "desc": "Software registers itself as a camera device and supplies prepared media to any application that opens it. The most accessible injection technique, because consumer tools for it exist for legitimate streaming purposes.",
+   "controls": [
+    "C05",
+    "C04",
+    "C07",
+    "C08",
+    "C09"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Block unsupported capture paths, step up to an alternate channel, or decline. Content analysis alone does not address this.",
+   "residual": "Where the integration supplies a finished image with no capture context, none of the family H signals exist at all.",
+   "refs": [
+    "CEN/TS 18099:2024"
+   ],
+   "tell": "path"
+  },
+  {
+   "id": "T3002",
+   "stage": "AT03",
+   "name": "Hooked camera API",
+   "effort": "moderate",
+   "subs": [],
+   "desc": "On a compromised device, calls to the platform camera interface are intercepted and the returned frames replaced, so the application receives adversary-supplied media through what appears to be the normal path.",
+   "controls": [
+    "C04",
+    "C06",
+    "C08",
+    "C07"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Refuse or step up where the platform will not attest to the device and application instance.",
+   "residual": "This is precisely the case platform attestation exists for, and precisely the case where a browser integration cannot obtain it.",
+   "refs": [
+    "CEN/TS 18099:2024"
+   ],
+   "tell": "path"
+  },
+  {
+   "id": "T3003",
+   "stage": "AT03",
+   "name": "Hardware capture device",
+   "effort": "high",
+   "subs": [],
+   "desc": "A physical device presents itself to the host as a webcam while replaying prepared video, defeating software-only inspection because the operating system genuinely sees a hardware camera.",
+   "controls": [
+    "C07",
+    "C08",
+    "C03",
+    "C04"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Assess sensor metadata plausibility and frame cadence; a capture-time challenge the prepared media cannot anticipate is the strongest single control.",
+   "residual": "The most resistant injection technique to software inspection, and the reason capture-time challenge values matter.",
+   "refs": [
+    "CEN/TS 18099:2024"
+   ],
+   "tell": "path"
+  },
+  {
+   "id": "T3004",
+   "stage": "AT03",
+   "name": "Real-time face swap",
+   "effort": "moderate",
+   "subs": [
+    "Live swap onto the operator's face",
+    "Fully generated live puppet"
+   ],
+   "desc": "Generative software transforms the operator's live video into the target identity in real time and injects the result, so the media responds to instructions and challenges as they are issued.",
+   "controls": [
+    "C05",
+    "C04",
+    "C16",
+    "C03"
+   ],
+   "signals": [
+    "G",
+    "H",
+    "F"
+   ],
+   "response": "Step up to a cryptographic credential with holder binding, review, or decline. Combine generative artifact analysis with capture-path evidence.",
+   "residual": "The fastest-evolving technique in the matrix. Detection that recognizes current generators degrades predictably as new ones appear.",
+   "refs": [
+    "ENISA, Remote Identity Proofing: Attacks and Countermeasures",
+    "CEN/TS 18099:2024"
+   ],
+   "tell": "image"
+  },
+  {
+   "id": "T3005",
+   "stage": "AT03",
+   "name": "Emulator fed prepared media",
+   "effort": "low",
+   "subs": [],
+   "desc": "An emulated device is configured so that its virtual camera returns a prepared video file, combining the environment technique at AT01 with injection at AT03 into a single low-cost workflow.",
+   "controls": [
+    "C06",
+    "C05",
+    "C08"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Block unsupported environments where the flow requires a trustworthy capture path.",
+   "residual": "Cheap, scriptable, and easy to run at volume, which makes velocity and graph signals unusually productive against it.",
+   "refs": [
+    "CEN/TS 18099:2024"
+   ],
+   "tell": "path"
+  },
+  {
+   "id": "T4001",
+   "stage": "AT04",
+   "name": "Payload substitution in transit",
+   "effort": "moderate",
+   "subs": [],
+   "desc": "The captured media is replaced between the client and the service, so a genuine capture session produces a submission the adversary chose.",
+   "controls": [
+    "C10",
+    "C09"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Reject submissions that are not integrity-bound to the session that produced them.",
+   "residual": "Transport protection moves the problem to the client; a compromised client remains the more common route.",
+   "refs": [],
+   "tell": "path"
+  },
+  {
+   "id": "T4002",
+   "stage": "AT04",
+   "name": "Session replay",
+   "effort": "low",
+   "subs": [],
+   "desc": "A previously successful submission is resubmitted, either in a new session or against a different identity, on the assumption that media accepted once will be accepted again.",
+   "controls": [
+    "C09",
+    "C03",
+    "C18"
+   ],
+   "signals": [
+    "H"
+   ],
+   "response": "Bind media server-side to its session and treat recurrence of an identical artifact across identities as a population signal.",
+   "residual": "Requires the adversary to have obtained a valid prior submission, which itself indicates a separate compromise.",
+   "refs": [],
+   "tell": "path"
+  },
+  {
+   "id": "T4003",
+   "stage": "AT04",
+   "name": "Direct submission with no capture",
+   "effort": "low",
+   "subs": [],
+   "desc": "A finished image is supplied to the service through an integration path that does not involve a Persona-controlled capture, so no capture context exists to describe.",
+   "controls": [
+    "C16",
+    "C11",
+    "C17"
+   ],
+   "signals": [
+    "G",
+    "A",
+    "B"
+   ],
+   "response": "Content analysis still applies. Injection resistance in the sense used here does not, and any claim about it should be qualified accordingly.",
+   "residual": "This is the single most consequential configuration choice for injection resistance, and it is a customer decision.",
+   "refs": [],
+   "tell": "image"
+  },
+  {
+   "id": "T4004",
+   "stage": "AT04",
+   "name": "Cross-identity media reuse",
+   "effort": "low",
+   "subs": [],
+   "desc": "The same face capture or document image is submitted against multiple distinct claimed identities, often across accounts or over an extended period to stay below velocity thresholds.",
+   "controls": [
+    "C18",
+    "C19",
+    "C20"
+   ],
+   "signals": [
+    "F"
+   ],
+   "response": "Recurrence of a biometric reference or document number across distinct identities is far more diagnostic than recurrence of a network address; thresholds should reflect that.",
+   "residual": "Only visible across transactions. A single submission carries no evidence of it.",
+   "refs": [],
+   "tell": "across"
+  },
+  {
+   "id": "T5001",
+   "stage": "AT05",
+   "name": "Fabricated document",
+   "effort": "moderate",
+   "subs": [
+    "Template-generated card",
+    "Wholly invented issuer"
+   ],
+   "desc": "A document that was never legitimately issued, produced from a template or generated to order. Quality ranges from obviously wrong to close reproductions of current designs.",
+   "controls": [
+    "C11",
+    "C12",
+    "C14",
+    "C20"
+   ],
+   "signals": [],
+   "response": "Request alternate evidence or source corroboration, then review or decline. Version consistency is productive: a layout retired before the stated issue date is wrong however well made.",
+   "residual": "Visual analysis cannot establish with certainty that a physical document was legitimately issued.",
+   "refs": [],
+   "tell": "none"
+  },
+  {
+   "id": "T5002",
+   "stage": "AT05",
+   "name": "Altered genuine document",
+   "effort": "moderate",
+   "subs": [
+    "Portrait substitution",
+    "Field alteration",
+    "Physical lamination replacement"
+   ],
+   "desc": "A real document modified so that it supports a different identity or different attributes, most commonly a replaced portrait or an altered date, name, or number.",
+   "controls": [
+    "C11",
+    "C12",
+    "C13",
+    "C14"
+   ],
+   "signals": [],
+   "response": "Step up to issuing source or chip validation, which compares the visible page against signed data the forger cannot alter.",
+   "residual": "Digital and physical alteration leave different traces; a deployment that assesses only one covers only part of this technique.",
+   "refs": [
+    "ICAO Doc 9303"
+   ],
+   "tell": "none"
+  },
+  {
+   "id": "T5003",
+   "stage": "AT05",
+   "name": "Stolen genuine document",
+   "effort": "low",
+   "subs": [],
+   "desc": "Authentic, unaltered evidence belonging to another person. Every document control returns a correct result, because there is nothing wrong with the document.",
+   "controls": [
+    "C15",
+    "C16",
+    "C13",
+    "C20"
+   ],
+   "signals": [
+    "A",
+    "D",
+    "E"
+   ],
+   "response": "Binding is the control that matters. Require face comparison against the document or chip portrait, and check compromised-evidence intelligence.",
+   "residual": "A document recorded as compromised may be presented by its rightful holder, which argues for review rather than automatic decline.",
+   "refs": [],
+   "tell": "image"
+  },
+  {
+   "id": "T5004",
+   "stage": "AT05",
+   "name": "Specimen or published template",
+   "effort": "low",
+   "subs": [],
+   "desc": "A specimen document published by an issuer for reference purposes, or a widely circulated template image, submitted as if it were a real credential.",
+   "controls": [
+    "C20",
+    "C11",
+    "C18"
+   ],
+   "signals": [
+    "F"
+   ],
+   "response": "Decline. These circulate widely and are a recurring source of low-effort attempts, often in volume from one source.",
+   "residual": "Intelligence about circulating artifacts ages, and a new specimen circulates before it is recorded.",
+   "refs": [],
+   "tell": "across"
+  },
+  {
+   "id": "T5005",
+   "stage": "AT05",
+   "name": "Synthetic identity",
+   "effort": "high",
+   "subs": [
+    "Real attributes recombined",
+    "Cultivated identity with history"
+   ],
+   "desc": "An identity assembled from a mix of real and fabricated attributes, sometimes cultivated over months so that it accumulates a plausible data footprint before it is used.",
+   "controls": [
+    "C14",
+    "C17",
+    "C18",
+    "C19",
+    "C23",
+    "C24"
+   ],
+   "signals": [],
+   "response": "Corroborate against authoritative sources, weigh phone and email tenure, and examine relationship structure. Thin or conflicting history is the usual tell.",
+   "residual": "A patiently cultivated identity can satisfy attribute corroboration. Tenure is what an adversary cannot create on demand, and what a cultivated identity buys.",
+   "refs": [
+    "NIST SP 800-63A r4"
+   ],
+   "tell": "none"
+  },
+  {
+   "id": "T5006",
+   "stage": "AT05",
+   "name": "Compromised authoritative data",
+   "effort": "high",
+   "subs": [],
+   "desc": "The record a verification corroborates against is itself wrong, either because an issuing process was compromised or because breached personal data allows an adversary to satisfy knowledge-style checks.",
+   "controls": [
+    "C13",
+    "C15",
+    "C19",
+    "C21",
+    "C24"
+   ],
+   "signals": [],
+   "response": "Do not treat corroboration as proof that the presenter is the rightful individual. Require binding, and route conflicts to human judgment.",
+   "residual": "If an issuing process was compromised, the resulting document is authentic. Cryptography confirms issuance and cannot assess the quality of it.",
+   "refs": [
+    "NIST SP 800-63A r4"
+   ],
+   "tell": "none"
+  },
+  {
+   "id": "T6001",
+   "stage": "AT06",
+   "name": "Identity muling",
+   "effort": "low",
+   "subs": [
+    "Paid participant",
+    "Coerced participant"
+   ],
+   "desc": "A real person completes the verification with their own genuine evidence, then transfers control of the account. Every capture, document, and biometric control returns a correct result.",
+   "controls": [
+    "C22",
+    "C19",
+    "C17"
+   ],
+   "signals": [],
+   "response": "Address after the fact through lifecycle monitoring, transaction controls, and investigation of related activity.",
+   "residual": "The structural limit of biometric binding. A genuinely present, genuinely matching person cannot be detected at the verification event.",
+   "refs": [
+    "Persona Research, Identity muling and second-party fraud"
+   ],
+   "tell": "none"
+  },
+  {
+   "id": "T6002",
+   "stage": "AT06",
+   "name": "Account takeover",
+   "effort": "moderate",
+   "subs": [],
+   "desc": "Control of an existing verified account is obtained through credential compromise, session theft, or social engineering, inheriting the assurance of the original verification.",
+   "controls": [
+    "C22",
+    "C17",
+    "C23"
+   ],
+   "signals": [],
+   "response": "Step up authentication or identity verification on device novelty, geography change, and recent SIM swap indicators.",
+   "residual": "Identity proofing establishes a link at one moment. It does not describe who controls the account afterwards.",
+   "refs": [
+    "NIST SP 800-63A r4"
+   ],
+   "tell": "none"
+  },
+  {
+   "id": "T6003",
+   "stage": "AT06",
+   "name": "Recovery path abuse",
+   "effort": "moderate",
+   "subs": [
+    "SIM swap then recovery",
+    "Support-channel social engineering"
+   ],
+   "desc": "The account recovery flow is attacked instead of onboarding, because recovery is frequently configured as a weaker path while protecting an asset that has become more valuable.",
+   "controls": [
+    "C23",
+    "C22",
+    "C17",
+    "C21",
+    "C24"
+   ],
+   "signals": [],
+   "response": "Recovery should not establish control of an account on evidence weaker than the evidence that opened it. Recent SIM swap is particularly significant here.",
+   "residual": "An adversary who cannot pass onboarding has an obvious incentive to attack recovery, and often finds a shorter path.",
+   "refs": [
+    "NIST SP 800-63A r4"
+   ],
+   "tell": "none"
+  },
+  {
+   "id": "T6004",
+   "stage": "AT06",
+   "name": "Coordinated ring at scale",
+   "effort": "high",
+   "subs": [
+    "Star around a shared artifact",
+    "Chain through sequential links",
+    "Dense cluster from a shared toolkit"
+   ],
+   "desc": "Activity distributed across many people, accounts, devices, or documents so that no single submission is anomalous. The structure connecting the attempts is the finding, not any one of them.",
+   "controls": [
+    "C19",
+    "C18",
+    "C20",
+    "C22"
+   ],
+   "signals": [],
+   "response": "Restrict linked accounts, investigate the cluster, and refine policy. A star can often be blocked at the hub; a chain requires investigation to find its extent.",
+   "residual": "The first application in a cluster has no cluster to belong to yet. It becomes suspicious only when the fourth arrives.",
+   "refs": [],
+   "tell": "none"
+  }
+ ],
+ "tells": {
+  "image": {
+   "label": "In the image",
+   "sub": "Families A–E, G"
+  },
+  "across": {
+   "label": "Only across many submissions",
+   "sub": "Family F"
+  },
+  "path": {
+   "label": "Only in the capture path",
+   "sub": "Family H"
+  },
+  "none": {
+   "label": "No face or camera trace",
+   "sub": "Document, data, population, lifecycle"
+  }
+ },
+ "ladder": [
+  {
+   "id": "live",
+   "label": "Selfie liveness only",
+   "add": [
+    "C02",
+    "C16"
+   ],
+   "desc": "Frame retention and a liveness check. No document capture.",
+   "set": [
+    "C02",
+    "C16"
+   ],
+   "named": true
+  },
+  {
+   "id": "docsel",
+   "label": "Document and selfie",
+   "add": [
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15"
+   ],
+   "desc": "Adds guided capture, document authenticity, encoded data, and face comparison, over a protected connection.",
+   "set": [
+    "C02",
+    "C16",
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15"
+   ],
+   "named": true
+  },
+  {
+   "id": "integrity",
+   "label": "+ Capture checks",
+   "add": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ],
+   "desc": "Adds a capture-time challenge, camera and runtime checks, frame timing, and session binding.",
+   "set": [
+    "C02",
+    "C16",
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09"
+   ],
+   "named": false
+  },
+  {
+   "id": "sources",
+   "label": "+ Evidence sources",
+   "add": [
+    "C13",
+    "C14"
+   ],
+   "desc": "Adds chip and wallet credential validation and authoritative source checks.",
+   "set": [
+    "C02",
+    "C16",
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C13",
+    "C14"
+   ],
+   "named": false
+  },
+  {
+   "id": "context",
+   "label": "+ Context and population",
+   "add": [
+    "C17",
+    "C18",
+    "C19",
+    "C20"
+   ],
+   "desc": "Adds device and network context, velocity, link analysis, and risk intelligence.",
+   "set": [
+    "C02",
+    "C16",
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C13",
+    "C14",
+    "C17",
+    "C18",
+    "C19",
+    "C20"
+   ],
+   "named": false
+  },
+  {
+   "id": "web",
+   "label": "Full stack, web",
+   "add": [
+    "C21",
+    "C22",
+    "C23",
+    "C24"
+   ],
+   "desc": "Every control a browser flow supports. Platform attestation needs a native app.",
+   "set": [
+    "C02",
+    "C16",
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C13",
+    "C14",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21",
+    "C22",
+    "C23",
+    "C24"
+   ],
+   "named": true
+  },
+  {
+   "id": "native",
+   "label": "Full stack, native app",
+   "add": [
+    "C04"
+   ],
+   "desc": "All 24 controls, including platform attestation.",
+   "set": [
+    "C02",
+    "C16",
+    "C01",
+    "C10",
+    "C11",
+    "C12",
+    "C15",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C13",
+    "C14",
+    "C17",
+    "C18",
+    "C19",
+    "C20",
+    "C21",
+    "C22",
+    "C23",
+    "C24",
+    "C04"
+   ],
+   "named": true
+  }
+ ],
+ "standards": [
+  {
+   "name": "ISO/IEC 30107-3:2023",
+   "note": "Testing and reporting for biometric presentation attack detection. Use for evaluation scope and metrics at stage AT02. Do not imply it covers media injection or system-level attacks.",
+   "url": "https://www.iso.org/standard/79520.html"
+  },
+  {
+   "name": "ISO/IEC 30107-1:2023",
+   "note": "The presentation attack detection framework, including the vocabulary of instruments and species used throughout this matrix.",
+   "url": "https://www.iso.org/standard/83828.html"
+  },
+  {
+   "name": "CEN/TS 18099:2024",
+   "note": "Framework for detecting and evaluating biometric data injection attacks, meaning samples replaced or modified before feature extraction. The correct counterpart to 30107-3 for stage AT03, not a substitute for it.",
+   "url": "https://standards.cencenelec.eu/"
+  },
+  {
+   "name": "ISO/IEC 19795-1:2021",
+   "note": "Principles and framework for biometric performance testing and reporting. Use for face comparison methodology and for the form in which error rates should be quoted.",
+   "url": "https://www.iso.org/search.html?q=ISO%2FIEC+19795-1"
+  },
+  {
+   "name": "ISO/IEC 19795-10:2024",
+   "note": "Quantifying performance variation across demographic groups. The relevant reporting form is per-group error at a fixed operating point, not a single aggregate.",
+   "url": "https://www.iso.org/search.html?q=ISO%2FIEC+19795-10"
+  },
+  {
+   "name": "ISO/IEC 29794-5",
+   "note": "Face image quality assessment, including component measures reported alongside a unified score. Quality conditions everything downstream of it.",
+   "url": "https://www.iso.org/search.html?q=ISO%2FIEC+29794-5"
+  },
+  {
+   "name": "ISO/IEC 2382-37",
+   "note": "Harmonized biometric vocabulary. Use to fix terminology before comparing vendor claims, because much apparent disagreement is vocabulary.",
+   "url": "https://www.iso.org/search.html?q=ISO%2FIEC+2382-37"
+  },
+  {
+   "name": "NIST SP 800-63A r4",
+   "note": "Identity proofing and enrollment: resolution, validation, verification, fraud checks, privacy, redress, and accessibility. Tie any assurance-level claim to a defined service, configuration, and assessment scope.",
+   "url": "https://csrc.nist.gov/pubs/sp/800/63/a/r4/final"
+  },
+  {
+   "name": "ETSI TS 119 461",
+   "note": "Policy and security requirements for identity proofing service components, including the five-task operational model and the proofing record.",
+   "url": "https://www.etsi.org/deliver/etsi_ts/119400_119499/119461/02.01.01_60/ts_119461v020101p.pdf"
+  },
+  {
+   "name": "ICAO Doc 9303",
+   "note": "Machine-readable travel documents, chip data, and the public key infrastructure behind electronic passport validation.",
+   "url": "https://www.icao.int/publications/pages/publication.aspx?docnum=9303"
+  },
+  {
+   "name": "ENISA remote identity proofing",
+   "note": "Threat analysis and good practice, including presentation attacks, deepfakes, and injection. Guidance rather than a conformance standard.",
+   "url": "https://www.enisa.europa.eu/publications/remote-identity-proofing-attacks-countermeasures"
+  }
+ ],
+ "questions": [
+  {
+   "ask": "Which instrument species were tested, and which were not?",
+   "why": "A result covers only the species in the test set. Untested classes are not covered by the number, however strong it looks."
+  },
+  {
+   "ask": "Presentation attacks only, or injection as well?",
+   "why": "Separate attack classes with separate controls, in columns AT02 and AT03 of this matrix. A result about one is not evidence about the other."
+  },
+  {
+   "ask": "Which devices, operating systems, and capture modes?",
+   "why": "Camera quality, available sensors, and platform integrity features vary enormously. Results do not transfer across device classes."
+  },
+  {
+   "ask": "Video sequence or single still?",
+   "why": "A single still removes the motion and temporal families entirely, which materially changes what is detectable."
+  },
+  {
+   "ask": "At what operating point, and what was the paired error rate?",
+   "why": "Either error rate can be made to look excellent by sacrificing the other. Both are needed."
+  },
+  {
+   "ask": "Which population, and was error reported by group?",
+   "why": "Aggregates can conceal materially worse performance for a subgroup. ISO/IEC 19795-10 addresses this."
+  },
+  {
+   "ask": "Which product version, tested when?",
+   "why": "Both models and attacks change. A result ages, and results against generative attacks age fastest."
+  },
+  {
+   "ask": "Laboratory evaluation or production monitoring?",
+   "why": "Laboratory testing gives comparability under controlled conditions; production monitoring gives evidence about the real distribution. Neither substitutes for the other."
+  }
+ ],
+ "persona": {
+  "sections": [
+   {
+    "id": "check",
+    "name": "Verification checks",
+    "blurb": "The per-submission checks that decide whether a verification passes",
+    "note": "Each check is configured as required or non-required per template, so the same check contributes differently in two deployments. Results are Passed, Failed, or Not Applicable.",
+    "docs": [
+     {
+      "label": "Verification checks",
+      "url": "https://docs.withpersona.com/verification-checks"
+     },
+     {
+      "label": "Verification types",
+      "url": "https://docs.withpersona.com/verification-types"
+     },
+     {
+      "label": "Verifications",
+      "url": "https://docs.withpersona.com/verifications"
+     },
+     {
+      "label": "Checks that improve other checks",
+      "url": "https://help.withpersona.com/articles/1r1p4vM8O6uJXbJw1hO8WP/"
+     },
+     {
+      "label": "Legacy verification checks",
+      "url": "https://docs.withpersona.com/legacy-verification-checks"
+     }
+    ]
+   },
+   {
+    "id": "report",
+    "name": "Reports",
+    "blurb": "Lookups against external and authoritative data, run beside a verification",
+    "note": "A report describes a record, not the person in front of the camera. Coverage varies by geography and by how thin the subject file is.",
+    "docs": [
+     {
+      "label": "Reports",
+      "url": "https://docs.withpersona.com/reports"
+     },
+     {
+      "label": "Create a report",
+      "url": "https://docs.withpersona.com/api-reference/reports/create-a-report"
+     }
+    ]
+   },
+   {
+    "id": "signal",
+    "name": "Signals",
+    "blurb": "Environment, behaviour, and population measurements exposed per inquiry",
+    "note": "Signals are evidence, not decisions. Most are individually weak and only become diagnostic in convergence, which is why they are exposed as values rather than as verdicts.",
+    "docs": [
+     {
+      "label": "Inquiry signals",
+      "url": "https://docs.withpersona.com/inquiry-signals"
+     },
+     {
+      "label": "Signals overview",
+      "url": "https://help.withpersona.com/articles/3aYYkI9NMDsyVqx5V3IT3G/"
+     },
+     {
+      "label": "Interpreting signals",
+      "url": "https://help.withpersona.com/articles/59xyT8o5Did16ovuqSIUDj/"
+     },
+     {
+      "label": "How to use signals",
+      "url": "https://help.withpersona.com/articles/O9RVEgZvOTj2D47FGJJSb/"
+     }
+    ]
+   },
+   {
+    "id": "graph",
+    "name": "Graph",
+    "blurb": "Relationships between accounts and the properties they share",
+    "note": "Graph identifies relationships, not culpability. The first account in a cluster has no cluster to belong to yet.",
+    "docs": [
+     {
+      "label": "Graph",
+      "url": "https://docs.withpersona.com/graph"
+     },
+     {
+      "label": "Graph glossary",
+      "url": "https://help.withpersona.com/articles/mDyQ4BlICWkXzVyUQyFwo/"
+     },
+     {
+      "label": "Graph query reference",
+      "url": "https://help.withpersona.com/articles/2dlG9Q9liRn43wUIxHntRT/"
+     }
+    ]
+   },
+   {
+    "id": "marketplace",
+    "name": "Marketplace integrations",
+    "blurb": "Third-party services called from a workflow",
+    "note": "Listed here is the fraud- and identity-relevant subset of the catalogue. Marketplace integrations are available to Enterprise and managed Growth customers, and each carries its own coverage and contract.",
+    "docs": [
+     {
+      "label": "Marketplace and third-party integrations",
+      "url": "https://help.withpersona.com/marketplace-and-3rd-party-integrations/"
+     },
+     {
+      "label": "Using Marketplace integrations",
+      "url": "https://help.withpersona.com/articles/6YaRAGHHcXb6MQ0c6CGvbJ/"
+     }
+    ]
+   },
+   {
+    "id": "config",
+    "name": "Inquiry configuration",
+    "blurb": "Template and integration settings that move the attack surface",
+    "note": "These are the choices a customer makes, not capabilities Persona applies on their behalf. Several of them decide whether an entire signal family exists at all.",
+    "docs": [
+     {
+      "label": "Inquiry templates",
+      "url": "https://docs.withpersona.com/inquiry-templates"
+     },
+     {
+      "label": "Choosing an integration method",
+      "url": "https://docs.withpersona.com/choosing-an-integration-method"
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "id": "gov-id",
+    "kind": "check",
+    "name": "Government ID",
+    "docs": [
+     {
+      "label": "Government ID Verification",
+      "url": "https://help.withpersona.com/articles/5vXD7S7pQCq8Q9Z4RztxLw/"
+     }
+    ]
+   },
+   {
+    "id": "selfie",
+    "kind": "check",
+    "name": "Selfie and biometric",
+    "docs": [
+     {
+      "label": "Selfie Verification",
+      "url": "https://help.withpersona.com/articles/1l0WTbR5UsfiggNDPWbnUp/"
+     }
+    ]
+   },
+   {
+    "id": "document",
+    "kind": "check",
+    "name": "Document AI",
+    "docs": [
+     {
+      "label": "Document AI",
+      "url": "https://help.withpersona.com/articles/2ipL09vsPcus5OXuOXdeO9/"
+     },
+     {
+      "label": "Document AI Enhanced",
+      "url": "https://help.withpersona.com/articles/77WsxmlXGQNgCfvn3B4cgr/"
+     },
+     {
+      "label": "Document verifications API",
+      "url": "https://docs.withpersona.com/api-reference/verifications/document-verifications"
+     }
+    ]
+   },
+   {
+    "id": "chip",
+    "kind": "check",
+    "name": "Chip, NFC, and digital credential",
+    "docs": [
+     {
+      "label": "Collecting passports and other IDs using NFC",
+      "url": "https://help.withpersona.com/articles/1iu1Fak8y9RiOE2FddXrHJ/"
+     }
+    ]
+   },
+   {
+    "id": "database",
+    "kind": "check",
+    "name": "Authoritative and database",
+    "docs": [
+     {
+      "label": "Database Verification",
+      "url": "https://help.withpersona.com/articles/7dcdaIsMttmPUZ2ZelRbZD/"
+     },
+     {
+      "label": "Database verifications API",
+      "url": "https://docs.withpersona.com/api-reference/verifications/database-verifications"
+     }
+    ]
+   },
+   {
+    "id": "contact",
+    "kind": "check",
+    "name": "Phone and email possession",
+    "docs": [
+     {
+      "label": "Phone Number Verification",
+      "url": "https://help.withpersona.com/articles/5tWkS5L9FJclUINe6kZtz7/"
+     },
+     {
+      "label": "Email (2FA) Verification",
+      "url": "https://help.withpersona.com/articles/2FauPy2tquCwnyeMjtpVly/"
+     }
+    ]
+   },
+   {
+    "id": "business",
+    "kind": "check",
+    "name": "Business and brand",
+    "docs": [
+     {
+      "label": "Business Registry Verification",
+      "url": "https://help.withpersona.com/articles/3pkLBWKg5wIQJru7PATxBc/"
+     },
+     {
+      "label": "Business Website Verification",
+      "url": "https://help.withpersona.com/articles/6YMwMNVZpOYO4n6bpUhokY/"
+     }
+    ]
+   },
+   {
+    "id": "report-identity",
+    "kind": "report",
+    "name": "Identity and contact",
+    "docs": [
+     {
+      "label": "Create a report",
+      "url": "https://docs.withpersona.com/api-reference/reports/create-a-report"
+     }
+    ]
+   },
+   {
+    "id": "report-screening",
+    "kind": "report",
+    "name": "Screening",
+    "docs": [
+     {
+      "label": "Create a report",
+      "url": "https://docs.withpersona.com/api-reference/reports/create-a-report"
+     }
+    ]
+   },
+   {
+    "id": "report-fraud",
+    "kind": "report",
+    "name": "Fraud scoring",
+    "docs": [
+     {
+      "label": "Create a report",
+      "url": "https://docs.withpersona.com/api-reference/reports/create-a-report"
+     }
+    ]
+   },
+   {
+    "id": "report-business",
+    "kind": "report",
+    "name": "Business",
+    "docs": [
+     {
+      "label": "Create a report",
+      "url": "https://docs.withpersona.com/api-reference/reports/create-a-report"
+     }
+    ]
+   },
+   {
+    "id": "signal-network",
+    "kind": "signal",
+    "name": "Network and origin",
+    "docs": [
+     {
+      "label": "Inquiry signals",
+      "url": "https://docs.withpersona.com/inquiry-signals"
+     }
+    ]
+   },
+   {
+    "id": "signal-device",
+    "kind": "signal",
+    "name": "Device and app integrity",
+    "docs": [
+     {
+      "label": "Inquiry signals",
+      "url": "https://docs.withpersona.com/inquiry-signals"
+     }
+    ]
+   },
+   {
+    "id": "signal-capture",
+    "kind": "signal",
+    "name": "Capture path",
+    "docs": [
+     {
+      "label": "Inquiry signals",
+      "url": "https://docs.withpersona.com/inquiry-signals"
+     }
+    ]
+   },
+   {
+    "id": "signal-behaviour",
+    "kind": "signal",
+    "name": "Behaviour and session",
+    "docs": [
+     {
+      "label": "Signals overview",
+      "url": "https://help.withpersona.com/articles/3aYYkI9NMDsyVqx5V3IT3G/"
+     }
+    ]
+   },
+   {
+    "id": "signal-population",
+    "kind": "signal",
+    "name": "Population and repetition",
+    "docs": [
+     {
+      "label": "Inquiry signals",
+      "url": "https://docs.withpersona.com/inquiry-signals"
+     }
+    ]
+   },
+   {
+    "id": "signal-account",
+    "kind": "signal",
+    "name": "Account lifecycle",
+    "docs": [
+     {
+      "label": "Inquiry signals",
+      "url": "https://docs.withpersona.com/inquiry-signals"
+     }
+    ]
+   },
+   {
+    "id": "graph-node",
+    "kind": "graph",
+    "name": "Property nodes",
+    "docs": [
+     {
+      "label": "Graph query reference",
+      "url": "https://help.withpersona.com/articles/2dlG9Q9liRn43wUIxHntRT/"
+     }
+    ]
+   },
+   {
+    "id": "graph-structure",
+    "kind": "graph",
+    "name": "Structure and traversal",
+    "docs": [
+     {
+      "label": "Graph glossary",
+      "url": "https://help.withpersona.com/articles/mDyQ4BlICWkXzVyUQyFwo/"
+     }
+    ]
+   },
+   {
+    "id": "graph-surface",
+    "kind": "graph",
+    "name": "Query surfaces",
+    "docs": [
+     {
+      "label": "Graph Explorer interface",
+      "url": "https://help.withpersona.com/articles/7DbcO4qiCbn4aY0Oc5iO8W/"
+     },
+     {
+      "label": "Running graph queries",
+      "url": "https://docs.withpersona.com/running-graph-queries"
+     },
+     {
+      "label": "Graph query templates",
+      "url": "https://docs.withpersona.com/graph-query-templates"
+     }
+    ]
+   },
+   {
+    "id": "mk-identity",
+    "kind": "marketplace",
+    "name": "Identity and contact intelligence",
+    "docs": [
+     {
+      "label": "Marketplace and third-party integrations",
+      "url": "https://help.withpersona.com/marketplace-and-3rd-party-integrations/"
+     }
+    ]
+   },
+   {
+    "id": "mk-fraud",
+    "kind": "marketplace",
+    "name": "Fraud and credit scoring",
+    "docs": [
+     {
+      "label": "Marketplace and third-party integrations",
+      "url": "https://help.withpersona.com/marketplace-and-3rd-party-integrations/"
+     }
+    ]
+   },
+   {
+    "id": "mk-crypto",
+    "kind": "marketplace",
+    "name": "Crypto and financial crime",
+    "docs": [
+     {
+      "label": "Marketplace and third-party integrations",
+      "url": "https://help.withpersona.com/marketplace-and-3rd-party-integrations/"
+     }
+    ]
+   },
+   {
+    "id": "mk-workforce",
+    "kind": "marketplace",
+    "name": "Workforce and access",
+    "docs": [
+     {
+      "label": "Marketplace and third-party integrations",
+      "url": "https://help.withpersona.com/marketplace-and-3rd-party-integrations/"
+     }
+    ]
+   },
+   {
+    "id": "mk-operations",
+    "kind": "marketplace",
+    "name": "Review operations",
+    "docs": [
+     {
+      "label": "Marketplace and third-party integrations",
+      "url": "https://help.withpersona.com/marketplace-and-3rd-party-integrations/"
+     }
+    ]
+   },
+   {
+    "id": "cfg-capture",
+    "kind": "config",
+    "name": "Capture",
+    "docs": [
+     {
+      "label": "Capture methods",
+      "url": "https://help.withpersona.com/articles/7JQ78WDWLj5L63qXEu7AqJ/"
+     }
+    ]
+   },
+   {
+    "id": "cfg-integration",
+    "kind": "config",
+    "name": "Integration model",
+    "docs": [
+     {
+      "label": "Choosing an integration method",
+      "url": "https://docs.withpersona.com/choosing-an-integration-method"
+     },
+     {
+      "label": "Creating inquiries",
+      "url": "https://docs.withpersona.com/creating-inquiries"
+     },
+     {
+      "label": "Prevent multiple inquiries",
+      "url": "https://docs.withpersona.com/prevent-users-from-creating-multiple-inquiries"
+     }
+    ]
+   },
+   {
+    "id": "cfg-session",
+    "kind": "config",
+    "name": "Links, sessions, and expiry",
+    "docs": [
+     {
+      "label": "Inquiry one-time links",
+      "url": "https://docs.withpersona.com/inquiry-one-time-links"
+     },
+     {
+      "label": "Inquiry expiration",
+      "url": "https://docs.withpersona.com/inquiry-expiration"
+     },
+     {
+      "label": "Inquiry sessions",
+      "url": "https://docs.withpersona.com/inquiry-sessions"
+     }
+    ]
+   },
+   {
+    "id": "cfg-policy",
+    "kind": "config",
+    "name": "Check policy and geography",
+    "docs": [
+     {
+      "label": "Verification checks",
+      "url": "https://docs.withpersona.com/verification-checks"
+     },
+     {
+      "label": "Country select options",
+      "url": "https://help.withpersona.com/articles/4KMGvVHubf36mLfciUX6Nh/"
+     }
+    ]
+   },
+   {
+    "id": "cfg-workflow",
+    "kind": "config",
+    "name": "Workflow and review",
+    "docs": [
+     {
+      "label": "Workflows",
+      "url": "https://docs.withpersona.com/workflows"
+     }
+    ]
+   },
+   {
+    "id": "cfg-embed",
+    "kind": "config",
+    "name": "Embed security",
+    "docs": [
+     {
+      "label": "Embedded Flow security",
+      "url": "https://docs.withpersona.com/embedded-flow-security"
+     }
+    ]
+   }
+  ],
+  "capabilities": [
+   {
+    "id": "K01",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Government ID",
+    "ref": "id_entity_detection",
+    "desc": "Detects whether the submission contains a government ID at all.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T2006",
+     "T4003"
+    ]
+   },
+   {
+    "id": "K02",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Extracted properties",
+    "ref": "id_extracted_properties_detection",
+    "desc": "Detects whether the ID details the template requires were successfully extracted.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T2006",
+     "T5001"
+    ]
+   },
+   {
+    "id": "K03",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Extraction inconsistency",
+    "ref": "id_extraction_inconsistency_detection",
+    "desc": "Detects disagreement between details read from the front of the ID and details read from the barcode.",
+    "controls": [
+     "C11",
+     "C12"
+    ],
+    "techniques": [
+     "T5002",
+     "T5001"
+    ]
+   },
+   {
+    "id": "K04",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Barcode inconsistency",
+    "ref": "id_barcode_inconsistency_detection",
+    "desc": "Detects inconsistencies in the barcode carried on the ID.",
+    "controls": [
+     "C12"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ]
+   },
+   {
+    "id": "K05",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "MRZ inconsistency",
+    "ref": "id_mrz_inconsistency_detection",
+    "desc": "Detects whether the machine-readable zone is well formed for the document type.",
+    "controls": [
+     "C12"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ]
+   },
+   {
+    "id": "K06",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "ID number format inconsistency",
+    "ref": "id_number_format_inconsistency_detection",
+    "desc": "Detects whether the identification number is well formed for its issuing authority.",
+    "controls": [
+     "C12"
+    ],
+    "techniques": [
+     "T5001"
+    ]
+   },
+   {
+    "id": "K07",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Valid dates",
+    "ref": "id_valid_dates_detection",
+    "desc": "Detects dates that violate the issuing authority’s own rules, such as a layout retired before its stated issue date.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ]
+   },
+   {
+    "id": "K08",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Fabrication",
+    "ref": "id_fabrication_detection",
+    "desc": "Detects IDs likely to be fabricated based on format and design, including camouflage passports.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001"
+    ]
+   },
+   {
+    "id": "K09",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "ID image tampering",
+    "ref": "id_tamper_detection",
+    "desc": "Detects submissions altered in a photo editor.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5002",
+     "T2006"
+    ]
+   },
+   {
+    "id": "K10",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "ID physical tampering",
+    "ref": "id_physical_tamper_detection",
+    "desc": "Detects physical alteration of the document itself, which leaves different traces than digital editing.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K11",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Colour",
+    "ref": "id_color_inconsistency_detection",
+    "desc": "Detects colours on the ID that differ from those expected for the document type.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001",
+     "T2006"
+    ]
+   },
+   {
+    "id": "K12",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Paper detection",
+    "ref": "id_paper_detection",
+    "desc": "Detects a paper copy presented in place of the physical document.",
+    "controls": [
+     "C11",
+     "C16"
+    ],
+    "techniques": [
+     "T2006"
+    ]
+   },
+   {
+    "id": "K13",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Electronic replica",
+    "ref": "id_electronic_replica_detection",
+    "desc": "Detects a document replayed from another screen or device rather than presented physically.",
+    "controls": [
+     "C16",
+     "C11"
+    ],
+    "techniques": [
+     "T2006",
+     "T2002"
+    ]
+   },
+   {
+    "id": "K14",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Double side",
+    "ref": "id_double_side_detection",
+    "desc": "Detects the same side of an ID submitted as both front and back.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T2006"
+    ]
+   },
+   {
+    "id": "K15",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Compromised submission",
+    "ref": "id_compromised_detection",
+    "desc": "Detects submissions traceable to a publicly available source, meaning specimens and circulating template images.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5004",
+     "T5003"
+    ]
+   },
+   {
+    "id": "K16",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Repeat",
+    "ref": "id_repeat_detection",
+    "desc": "Detects an ID whose details and portrait match a previously submitted one.",
+    "controls": [
+     "C18"
+    ],
+    "techniques": [
+     "T4004",
+     "T5003"
+    ]
+   },
+   {
+    "id": "K17",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Inconsistent repeat",
+    "ref": "id_inconsistent_repeat_detection",
+    "desc": "Detects reuse of an ID image or portrait carrying different identity details, meaning the same document under two identities.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T4004",
+     "T6004"
+    ]
+   },
+   {
+    "id": "K18",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "ID-to-selfie comparison",
+    "ref": "id_selfie_comparison",
+    "desc": "Compares the portrait on the ID against the selfie.",
+    "controls": [
+     "C15"
+    ],
+    "techniques": [
+     "T5003",
+     "T2003"
+    ]
+   },
+   {
+    "id": "K19",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Portrait age",
+    "ref": "id_age_inconsistency_detection",
+    "desc": "Detects a mismatch between the age printed on the ID and the age estimated from its portrait.",
+    "controls": [
+     "C11",
+     "C15"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K20",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Public figure",
+    "ref": "id_public_figure_detection",
+    "desc": "Detects an ID portrait matching a known public figure.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5004"
+    ]
+   },
+   {
+    "id": "K21",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Inquiry comparison",
+    "ref": "id_inquiry_comparison",
+    "desc": "Compares ID details such as name and birthdate against what was claimed on the inquiry.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5002",
+     "T5005"
+    ]
+   },
+   {
+    "id": "K22",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Account comparison",
+    "ref": "id_account_comparison",
+    "desc": "Compares ID details against the account they are presented for, which is a reverification rather than a first-inquiry control.",
+    "controls": [
+     "C22"
+    ],
+    "techniques": [
+     "T6002",
+     "T6003"
+    ]
+   },
+   {
+    "id": "K23",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Video quality",
+    "ref": "id_video_quality_detection",
+    "desc": "Assesses whether captured video meets the quality the downstream analysis needs.",
+    "controls": [
+     "C02",
+     "C08"
+    ],
+    "techniques": [
+     "T3003"
+    ]
+   },
+   {
+    "id": "K24",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Processable submission",
+    "ref": "id_unprocessable_submission_detection",
+    "desc": "Detects submissions that cannot be processed, which is the usual result of an upload path with no capture behind it.",
+    "controls": [
+     "C01"
+    ],
+    "techniques": [
+     "T4003"
+    ]
+   },
+   {
+    "id": "K25",
+    "kind": "check",
+    "group": "gov-id",
+    "name": "Allowed ID type",
+    "ref": "id_disallowed_type_detection",
+    "desc": "Rejects document types the template does not accept, which retires out-of-circulation layouts as well.",
+    "controls": [
+     "C11",
+     "C23"
+    ],
+    "techniques": [
+     "T5001"
+    ]
+   },
+   {
+    "id": "K26",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Selfie liveness",
+    "ref": "selfie_liveness_detection",
+    "desc": "Detects whether the selfie is a live individual rather than a recording, a picture, or another spoof.",
+    "controls": [
+     "C16"
+    ],
+    "techniques": [
+     "T2001",
+     "T2002",
+     "T2003",
+     "T2004",
+     "T2005"
+    ]
+   },
+   {
+    "id": "K27",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Suspicious entity",
+    "ref": "selfie_suspicious_entity_detection",
+    "desc": "Detects a government ID held up where a face should be.",
+    "controls": [
+     "C16"
+    ],
+    "techniques": [
+     "T2001",
+     "T2006"
+    ]
+   },
+   {
+    "id": "K28",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Multiple faces",
+    "ref": "selfie_multiple_faces_detection",
+    "desc": "Detects different faces across the captured poses.",
+    "controls": [
+     "C16",
+     "C15"
+    ],
+    "techniques": [
+     "T2001",
+     "T6001"
+    ]
+   },
+   {
+    "id": "K29",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Pose position",
+    "ref": "selfie_pose_detection",
+    "desc": "Detects whether the face is correctly positioned across every requested pose, which is the response to a capture-time instruction.",
+    "controls": [
+     "C03",
+     "C16"
+    ],
+    "techniques": [
+     "T2001",
+     "T2002",
+     "T2004"
+    ]
+   },
+   {
+    "id": "K30",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Pose repeat",
+    "ref": "selfie_pose_repeat_detection",
+    "desc": "Detects poses that are exact repeats of one another, as prepared media tends to be.",
+    "controls": [
+     "C03",
+     "C16"
+    ],
+    "techniques": [
+     "T2002",
+     "T4002"
+    ]
+   },
+   {
+    "id": "K31",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Selfie repeat",
+    "ref": "selfie_repeat_detection",
+    "desc": "Detects a selfie already on file against a different account.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T4004",
+     "T6004"
+    ]
+   },
+   {
+    "id": "K32",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Selfie-to-ID comparison",
+    "ref": "selfie_id_comparison",
+    "desc": "Compares the selfie against the portrait on the government ID.",
+    "controls": [
+     "C15"
+    ],
+    "techniques": [
+     "T5003",
+     "T2003",
+     "T3004"
+    ]
+   },
+   {
+    "id": "K33",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Account comparison",
+    "ref": "selfie_account_comparison",
+    "desc": "Compares the selfie against the portrait already held for the account.",
+    "controls": [
+     "C22",
+     "C15"
+    ],
+    "techniques": [
+     "T6002",
+     "T6003"
+    ]
+   },
+   {
+    "id": "K34",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Face covering",
+    "ref": "selfie_face_covering_detection",
+    "desc": "Detects a covered face, which suppresses the texture and geometry cues everything else depends on.",
+    "controls": [
+     "C01",
+     "C16"
+    ],
+    "techniques": [
+     "T2003"
+    ]
+   },
+   {
+    "id": "K35",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Portrait quality",
+    "ref": "selfie_portrait_quality_detection",
+    "desc": "Assesses whether the face portrait is clear and in focus; it conditions almost every other selfie check.",
+    "controls": [
+     "C01"
+    ],
+    "techniques": [
+     "T2001",
+     "T2003"
+    ]
+   },
+   {
+    "id": "K36",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Video quality",
+    "ref": "selfie_video_quality_detection",
+    "desc": "Assesses selfie video integrity and quality, without which motion and temporal analysis has nothing to read.",
+    "controls": [
+     "C02",
+     "C08"
+    ],
+    "techniques": [
+     "T3003",
+     "T2002"
+    ]
+   },
+   {
+    "id": "K37",
+    "kind": "check",
+    "group": "selfie",
+    "name": "Public figure",
+    "ref": "selfie_public_figure_detection",
+    "desc": "Detects a selfie matching a known public figure.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5004",
+     "T2005"
+    ]
+   },
+   {
+    "id": "K38",
+    "kind": "check",
+    "group": "document",
+    "name": "Enhanced fraud detection",
+    "ref": "document_enhanced_fraud_detection",
+    "desc": "Aggregates the enhanced document fraud indicators into one result alongside a composite risk score.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ],
+    "doc": {
+     "label": "Document AI Enhanced",
+     "url": "https://help.withpersona.com/articles/77WsxmlXGQNgCfvn3B4cgr/"
+    }
+   },
+   {
+    "id": "K39",
+    "kind": "check",
+    "group": "document",
+    "name": "Synthetic content detection",
+    "ref": "document_synthetic_content_detection",
+    "desc": "Detects placeholder entities and mock details of the kind that appear on demonstration and test documents.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001",
+     "T5004"
+    ]
+   },
+   {
+    "id": "K40",
+    "kind": "check",
+    "group": "document",
+    "name": "Template detection",
+    "ref": "document_template_detection",
+    "desc": "Detects a document built from a fraudulent template circulating online.",
+    "controls": [
+     "C11",
+     "C20"
+    ],
+    "techniques": [
+     "T5001",
+     "T5004"
+    ]
+   },
+   {
+    "id": "K41",
+    "kind": "check",
+    "group": "document",
+    "name": "Copy-move detection",
+    "ref": "document_image_copy_move_detection",
+    "desc": "Detects evidence of copy-move forgery, where a region of the document has been duplicated over another.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K42",
+    "kind": "check",
+    "group": "document",
+    "name": "Image suspicious metadata",
+    "ref": "document_image_suspicious_metadata_detection",
+    "desc": "Detects irregular or post-hoc modification timestamps on a submitted image.",
+    "controls": [
+     "C07",
+     "C11"
+    ],
+    "techniques": [
+     "T5002",
+     "T4003"
+    ]
+   },
+   {
+    "id": "K43",
+    "kind": "check",
+    "group": "document",
+    "name": "JPEG original image detection",
+    "ref": "document_jpeg_original_image_detection",
+    "desc": "Detects JPEG compression inconsistencies that indicate the image was modified after capture.",
+    "controls": [
+     "C07",
+     "C11"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K44",
+    "kind": "check",
+    "group": "document",
+    "name": "PDF editor detection",
+    "ref": "document_pdf_editor_detection",
+    "desc": "Detects traces of a document editor in a submitted PDF.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5002",
+     "T5001"
+    ]
+   },
+   {
+    "id": "K45",
+    "kind": "check",
+    "group": "document",
+    "name": "PDF abnormal font detection",
+    "ref": "document_pdf_abnormal_font_detection",
+    "desc": "Detects fonts that are outliers relative to the rest of the document, a common sign an editor was used.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K46",
+    "kind": "check",
+    "group": "document",
+    "name": "Recency",
+    "ref": "document_recency_detection",
+    "desc": "Detects whether the document is recent enough for the use case, which an old but genuine document is not.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5003"
+    ]
+   },
+   {
+    "id": "K47",
+    "kind": "check",
+    "group": "document",
+    "name": "Document selfie comparison",
+    "ref": "document_selfie_comparison",
+    "desc": "Compares a portrait carried on a supporting document against the selfie.",
+    "controls": [
+     "C15"
+    ],
+    "techniques": [
+     "T5003"
+    ]
+   },
+   {
+    "id": "K48",
+    "kind": "check",
+    "group": "chip",
+    "name": "PKI validation",
+    "ref": "id_nfc_pki_failure_detection",
+    "desc": "Validates the document-signing and certificate-authority chain behind an NFC credential.",
+    "controls": [
+     "C13"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ]
+   },
+   {
+    "id": "K49",
+    "kind": "check",
+    "group": "chip",
+    "name": "Data tampering",
+    "ref": "id_nfc_tamper_detection",
+    "desc": "Validates chip authentication and the data-group hashes on an ICAO-compliant travel document.",
+    "controls": [
+     "C13"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K50",
+    "kind": "check",
+    "group": "chip",
+    "name": "Compromised NFC document",
+    "ref": "id_nfc_compromised_detection",
+    "desc": "Detects unambiguous compromise signals: risky-list matches, hash integrity failures, a missing expected CSCA, revoked certificates.",
+    "controls": [
+     "C13",
+     "C20"
+    ],
+    "techniques": [
+     "T5006",
+     "T5003"
+    ]
+   },
+   {
+    "id": "K51",
+    "kind": "check",
+    "group": "chip",
+    "name": "Attribute comparison",
+    "ref": "id_nfc_attribute_comparison",
+    "desc": "Compares chip-held details such as name and birthdate against what was claimed.",
+    "controls": [
+     "C13",
+     "C11"
+    ],
+    "techniques": [
+     "T5002"
+    ]
+   },
+   {
+    "id": "K52",
+    "kind": "check",
+    "group": "chip",
+    "name": "Allowed issuer",
+    "ref": "verifiable_credential_allowed_issuer_detection",
+    "desc": "Validates that a verifiable credential was issued by a trusted issuer and, for Persona-issued credentials, that its binding claims match the allowlist.",
+    "controls": [
+     "C13"
+    ],
+    "techniques": [
+     "T5001",
+     "T5006"
+    ]
+   },
+   {
+    "id": "K53",
+    "kind": "check",
+    "group": "chip",
+    "name": "Credential account comparison",
+    "ref": "verifiable_credential_account_comparison",
+    "desc": "Compares claims carried in a verifiable credential against the account’s own fields.",
+    "controls": [
+     "C13",
+     "C22"
+    ],
+    "techniques": [
+     "T6002"
+    ]
+   },
+   {
+    "id": "K54",
+    "kind": "check",
+    "group": "chip",
+    "name": "SIM verification",
+    "ref": "phone_number_silent_network_authentication_sim_verified_detection",
+    "desc": "Confirms the SIM behind a phone number through silent network authentication, without a code the user could forward.",
+    "controls": [
+     "C13",
+     "C23"
+    ],
+    "techniques": [
+     "T6003",
+     "T6002"
+    ],
+    "doc": {
+     "label": "Phone Number Verification",
+     "url": "https://help.withpersona.com/articles/5tWkS5L9FJclUINe6kZtz7/"
+    }
+   },
+   {
+    "id": "K55",
+    "kind": "check",
+    "group": "database",
+    "name": "Identity comparison",
+    "ref": "database_identity_comparison",
+    "desc": "Detects whether the claimed identity matches a record in an authoritative or issuing database.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5001",
+     "T5005"
+    ]
+   },
+   {
+    "id": "K56",
+    "kind": "check",
+    "group": "database",
+    "name": "2+2 detection",
+    "ref": "database_two_plus_two_detection",
+    "desc": "Requires claimed attributes to corroborate across more than one independent source rather than one.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T5006"
+    ]
+   },
+   {
+    "id": "K57",
+    "kind": "check",
+    "group": "database",
+    "name": "Alive detection",
+    "ref": "database_deceased_detection",
+    "desc": "Detects whether the person on the matched record is living.",
+    "controls": [
+     "C14",
+     "C20"
+    ],
+    "techniques": [
+     "T5003",
+     "T5005"
+    ]
+   },
+   {
+    "id": "K58",
+    "kind": "check",
+    "group": "database",
+    "name": "Database face comparison",
+    "ref": "database_face_comparison",
+    "desc": "Compares the submitted selfie against a portrait held by the database source, which is a reference the presenter does not control.",
+    "controls": [
+     "C15",
+     "C14"
+    ],
+    "techniques": [
+     "T5002",
+     "T5003"
+    ]
+   },
+   {
+    "id": "K59",
+    "kind": "check",
+    "group": "database",
+    "name": "Inquiry comparison",
+    "ref": "database_inquiry_comparison",
+    "desc": "Detects inconsistency between attributes on the inquiry and those submitted for lookup.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "K60",
+    "kind": "check",
+    "group": "database",
+    "name": "Deliverable address",
+    "ref": "database_address_deliverable_detection",
+    "desc": "Detects whether the claimed address is deliverable, which a fabricated one frequently is not.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "K61",
+    "kind": "check",
+    "group": "database",
+    "name": "AAMVA identity comparison",
+    "ref": "aamva_identity_comparison",
+    "desc": "Compares licence attributes against participating US motor-vehicle records.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ],
+    "doc": {
+     "label": "AAMVA Verification",
+     "url": "https://help.withpersona.com/articles/1wiQ7wAhmnKh6mesCGopKl/"
+    }
+   },
+   {
+    "id": "K62",
+    "kind": "check",
+    "group": "database",
+    "name": "eCBSV record matched",
+    "ref": "database_ecbsv_record_match",
+    "desc": "Matches name, birthdate, and social security number against Social Security Administration records.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "eCBSV database verifications",
+     "url": "https://docs.withpersona.com/api-reference/verifications/ecbsv-database-verifications"
+    }
+   },
+   {
+    "id": "K63",
+    "kind": "check",
+    "group": "database",
+    "name": "eCBSV death record",
+    "ref": "database_ecbsv_death_record",
+    "desc": "Detects that the matched social security number belongs to a deceased person.",
+    "controls": [
+     "C14",
+     "C20"
+    ],
+    "techniques": [
+     "T5005",
+     "T5003"
+    ],
+    "doc": {
+     "label": "eCBSV database verifications",
+     "url": "https://docs.withpersona.com/api-reference/verifications/ecbsv-database-verifications"
+    }
+   },
+   {
+    "id": "K64",
+    "kind": "check",
+    "group": "database",
+    "name": "TIN name comparison",
+    "ref": "database_tin_name_comparison",
+    "desc": "Confirms a legal name against IRS taxpayer-identification records.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "TIN Verification",
+     "url": "https://help.withpersona.com/articles/2lGG2fqJwUO9ziVAFZNeTG/"
+    }
+   },
+   {
+    "id": "K65",
+    "kind": "check",
+    "group": "database",
+    "name": "Serpro face comparison",
+    "ref": "database_serpro_face_comparison",
+    "desc": "Compares the submitted face against Brazil’s Serpro records.",
+    "controls": [
+     "C15",
+     "C14"
+    ],
+    "techniques": [
+     "T5003"
+    ],
+    "doc": {
+     "label": "Serpro database verifications",
+     "url": "https://docs.withpersona.com/api-reference/verifications/serpro-database-verifications"
+    }
+   },
+   {
+    "id": "K66",
+    "kind": "check",
+    "group": "database",
+    "name": "Aadhaar face comparison",
+    "ref": "database_aadhaar_face_comparison",
+    "desc": "Compares the submitted selfie against the portrait held in the Aadhaar database.",
+    "controls": [
+     "C15",
+     "C14"
+    ],
+    "techniques": [
+     "T5003"
+    ],
+    "doc": {
+     "label": "Retrieve a verification",
+     "url": "https://docs.withpersona.com/api-reference/verifications/retrieve-a-verification"
+    }
+   },
+   {
+    "id": "K67",
+    "kind": "check",
+    "group": "database",
+    "name": "Carrier last name",
+    "ref": "database_phone_carrier_name_last_comparison",
+    "desc": "Compares the claimed surname against telecommunications-carrier records for the number.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T6003"
+    ],
+    "doc": {
+     "label": "Phone Carrier Verification",
+     "url": "https://help.withpersona.com/articles/7nbNgynP75u1YE4pLcV75L/"
+    }
+   },
+   {
+    "id": "K68",
+    "kind": "check",
+    "group": "database",
+    "name": "Carrier age threshold",
+    "ref": "database_phone_carrier_age_threshold_comparison",
+    "desc": "Tests carrier-derived age against a configured threshold.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Phone Carrier Verification",
+     "url": "https://help.withpersona.com/articles/7nbNgynP75u1YE4pLcV75L/"
+    }
+   },
+   {
+    "id": "K69",
+    "kind": "check",
+    "group": "contact",
+    "name": "Phone code confirmation",
+    "ref": "phone_number_confirmation_code_comparison",
+    "desc": "Confirms possession of the number by comparing the submitted code against the one sent to it.",
+    "controls": [
+     "C23"
+    ],
+    "techniques": [
+     "T6003",
+     "T5005"
+    ]
+   },
+   {
+    "id": "K70",
+    "kind": "check",
+    "group": "contact",
+    "name": "Phone deliverability",
+    "ref": "phone_number_deliverable_detection",
+    "desc": "Detects delivery problems for the number, including landlines where a mobile is required.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "K71",
+    "kind": "check",
+    "group": "contact",
+    "name": "Email code confirmation",
+    "ref": "email_address_confirmation_code_comparison",
+    "desc": "Confirms control of the address by comparing the submitted code against the one emailed to it.",
+    "controls": [
+     "C23"
+    ],
+    "techniques": [
+     "T6003"
+    ]
+   },
+   {
+    "id": "K72",
+    "kind": "check",
+    "group": "contact",
+    "name": "Confirmation code timeout",
+    "ref": "phone_number_timeout_detection",
+    "desc": "Requires the confirmation code to be submitted inside the allotted window, which bounds relay and guessing.",
+    "controls": [
+     "C09",
+     "C23"
+    ],
+    "techniques": [
+     "T6003"
+    ]
+   },
+   {
+    "id": "K73",
+    "kind": "check",
+    "group": "business",
+    "name": "Business identity comparison",
+    "ref": "database_business_identity_comparison",
+    "desc": "Detects whether the claimed business matches a record in an authoritative registry.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5001",
+     "T5005"
+    ]
+   },
+   {
+    "id": "K74",
+    "kind": "check",
+    "group": "business",
+    "name": "Active business detection",
+    "ref": "database_business_active_business_detection",
+    "desc": "Detects whether the business is legally active rather than dissolved or lapsed.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "K75",
+    "kind": "check",
+    "group": "business",
+    "name": "Associated persons comparison",
+    "ref": "database_business_associated_persons_comparison",
+    "desc": "Detects whether the declared officers and owners appear on the authoritative record.",
+    "controls": [
+     "C14",
+     "C19"
+    ],
+    "techniques": [
+     "T5005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "K76",
+    "kind": "check",
+    "group": "business",
+    "name": "Registered agent address",
+    "ref": "database_business_registered_agent_address_detection",
+    "desc": "Detects a submitted business address that is really the registered agent’s, a recurring shell-company pattern.",
+    "controls": [
+     "C14",
+     "C19"
+    ],
+    "techniques": [
+     "T5005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "K77",
+    "kind": "check",
+    "group": "business",
+    "name": "Business footprint identity comparison",
+    "ref": "database_business_footprint_identity_comparison",
+    "desc": "Corroborates a business against commercial and digital-presence data rather than registry data alone.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Business Footprint Verification",
+     "url": "https://help.withpersona.com/articles/1y9RqYAemIZn2jFK1HlEgS/"
+    }
+   },
+   {
+    "id": "K78",
+    "kind": "check",
+    "group": "business",
+    "name": "Domain age detection",
+    "ref": "business_website_domain_age_detection",
+    "desc": "Detects a domain too young for the claimed trading history, because tenure is what an adversary cannot create on demand.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Business Website Verification",
+     "url": "https://help.withpersona.com/articles/6YMwMNVZpOYO4n6bpUhokY/"
+    }
+   },
+   {
+    "id": "K79",
+    "kind": "check",
+    "group": "business",
+    "name": "Malicious website detection",
+    "ref": "business_website_malicious_website_detection",
+    "desc": "Detects whether the business website is malicious.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Business Website Verification",
+     "url": "https://help.withpersona.com/articles/6YMwMNVZpOYO4n6bpUhokY/"
+    }
+   },
+   {
+    "id": "K80",
+    "kind": "check",
+    "group": "business",
+    "name": "Website identity comparison",
+    "ref": "business_website_identity_comparison",
+    "desc": "Compares information extracted from the business website against what the applicant submitted.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Business Website Verification",
+     "url": "https://help.withpersona.com/articles/6YMwMNVZpOYO4n6bpUhokY/"
+    }
+   },
+   {
+    "id": "K81",
+    "kind": "check",
+    "group": "business",
+    "name": "Trademark ownership detection",
+    "ref": "brand_asset_trademark_ownership_detection",
+    "desc": "Detects potential trademark conflicts in a submitted brand asset, which is how impersonation of a known brand surfaces.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Brand Asset Verification",
+     "url": "https://help.withpersona.com/articles/2idIkprjWl5OBRAb5iOvZ6/"
+    }
+   },
+   {
+    "id": "R01",
+    "kind": "report",
+    "group": "report-identity",
+    "name": "Profile Report",
+    "ref": "report/profile",
+    "desc": "Matches authoritative identity records and returns names, birthdates, addresses, social security numbers, phones, and emails.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T5001"
+    ]
+   },
+   {
+    "id": "R02",
+    "kind": "report",
+    "group": "report-identity",
+    "name": "Profile Non-Authoritative Report",
+    "ref": "report/profile-non-authoritative",
+    "desc": "Returns non-authoritative identity, contact, and address information, useful for corroboration but not for proof.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "R03",
+    "kind": "report",
+    "group": "report-identity",
+    "name": "Phone Risk Report",
+    "ref": "report/phone-number",
+    "desc": "Returns carrier, line type, location, risk score, and SIM-swap risk for a phone number.",
+    "controls": [
+     "C14",
+     "C17"
+    ],
+    "techniques": [
+     "T6003",
+     "T6002",
+     "T5005"
+    ]
+   },
+   {
+    "id": "R04",
+    "kind": "report",
+    "group": "report-identity",
+    "name": "Email Address Report",
+    "ref": "report/email-address",
+    "desc": "Assesses validity, deliverability, domain age, breach exposure, disposability, and reputation for an email address.",
+    "controls": [
+     "C14",
+     "C17"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "R05",
+    "kind": "report",
+    "group": "report-identity",
+    "name": "Address Lookup Report",
+    "ref": "report/address-lookup",
+    "desc": "Standardises an address and reports deliverability, vacancy, activity, and addressee matching.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "R06",
+    "kind": "report",
+    "group": "report-identity",
+    "name": "Social Media Report",
+    "ref": "report/social-media",
+    "desc": "Finds social profiles associated with an individual, which is one way a cultivated identity’s thin history shows.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "R07",
+    "kind": "report",
+    "group": "report-screening",
+    "name": "Watchlist Report",
+    "ref": "report/watchlist",
+    "desc": "Screens an individual against configured watchlists and returns the matched lists and entity details.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5003",
+     "T6004"
+    ]
+   },
+   {
+    "id": "R08",
+    "kind": "report",
+    "group": "report-screening",
+    "name": "Politically Exposed Person Report",
+    "ref": "report/politically-exposed-person",
+    "desc": "Finds politically exposed person matches with positions, associates, affiliations, and sources.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5003"
+    ]
+   },
+   {
+    "id": "R09",
+    "kind": "report",
+    "group": "report-screening",
+    "name": "Adverse Media Report",
+    "ref": "report/adverse-media",
+    "desc": "Finds media associated with an individual and returns sources, names, countries, and match types.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5003",
+     "T6004"
+    ]
+   },
+   {
+    "id": "R10",
+    "kind": "report",
+    "group": "report-screening",
+    "name": "Crypto Address Watchlist Report",
+    "ref": "report/crypto-address-watchlist",
+    "desc": "Screens a cryptocurrency wallet address for watchlist matches.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "R11",
+    "kind": "report",
+    "group": "report-fraud",
+    "name": "Synthetic Report",
+    "ref": "report/synthetic",
+    "desc": "Returns abuse, first-party synthetic, and third-party synthetic identity scores.",
+    "controls": [
+     "C14",
+     "C19"
+    ],
+    "techniques": [
+     "T5005",
+     "T6001"
+    ]
+   },
+   {
+    "id": "R12",
+    "kind": "report",
+    "group": "report-fraud",
+    "name": "SentiLink Scores Report",
+    "ref": "report/integration/sentilink-scores",
+    "desc": "Returns third-party score names, values, versions, and reason codes for the application.",
+    "controls": [
+     "C20",
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "R13",
+    "kind": "report",
+    "group": "report-business",
+    "name": "Business Lookup Report",
+    "ref": "report/business-lookup",
+    "desc": "Retrieves registered-entity details, identifiers, status, addresses, officers, and registration authority data.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Business Lookup Report",
+     "url": "https://docs.withpersona.com/business-lookup-report"
+    }
+   },
+   {
+    "id": "R14",
+    "kind": "report",
+    "group": "report-business",
+    "name": "Business Registrations Lookup Report",
+    "ref": "report/business-registrations-lookup",
+    "desc": "Returns formation details and registry records, including registration numbers, authorities, and statuses.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "R15",
+    "kind": "report",
+    "group": "report-business",
+    "name": "Business Associated Persons Report",
+    "ref": "report/business-associated-persons",
+    "desc": "Returns associated people, positions, owners, and ownership roles for a business.",
+    "controls": [
+     "C14",
+     "C19"
+    ],
+    "techniques": [
+     "T5005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "R16",
+    "kind": "report",
+    "group": "report-business",
+    "name": "Business Watchlist Report",
+    "ref": "report/business-watchlist",
+    "desc": "Screens a business against configured sanctions, warning, fitness, and probity lists.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "R17",
+    "kind": "report",
+    "group": "report-business",
+    "name": "Business Adverse Media Report",
+    "ref": "report/business-adverse-media",
+    "desc": "Finds adverse-media sources associated with a business search term.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "S01",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "VPN detected",
+    "ref": "inquiry/vpn-detected",
+    "desc": "Whether any inquiry session was conducted through a VPN.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005"
+    ]
+   },
+   {
+    "id": "S02",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Proxy detected",
+    "ref": "inquiry/proxy-detected",
+    "desc": "Whether any session ran through a proxy or other anonymising network.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005"
+    ]
+   },
+   {
+    "id": "S03",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Tor detected",
+    "ref": "inquiry/tor-detected",
+    "desc": "Whether any session was detected using Tor.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005"
+    ]
+   },
+   {
+    "id": "S04",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Network threat level",
+    "ref": "inquiry/threat-level",
+    "desc": "Network risk scored from IP metadata, reported low, medium, or high.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005",
+     "T1006"
+    ]
+   },
+   {
+    "id": "S05",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Risk level",
+    "ref": "inquiry/risk-level",
+    "desc": "Risk from the volume of recent activity observed on the IP address.",
+    "controls": [
+     "C17",
+     "C18"
+    ],
+    "techniques": [
+     "T1006",
+     "T6004"
+    ]
+   },
+   {
+    "id": "S06",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "IP burst",
+    "ref": "inquiry/ip-burst",
+    "desc": "How many other completed inquiries share the same IP address inside a two-hour window.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T6004",
+     "T1006"
+    ]
+   },
+   {
+    "id": "S07",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "IP connection types",
+    "ref": "inquiry/ip-connection-types",
+    "desc": "Connection types across sessions, such as residential, corporate, and mobile, which is how residential proxying tends to show.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005"
+    ]
+   },
+   {
+    "id": "S08",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "IP prefix /24",
+    "ref": "inquiry/ip-prefix24",
+    "desc": "The /24 network prefix of the most recent session address, which groups attempts a single address would not.",
+    "controls": [
+     "C19",
+     "C18"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "S09",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Session ASNs",
+    "ref": "inquiry/session-asns",
+    "desc": "Autonomous system numbers collected from session IP addresses, which identify hosting and proxy infrastructure.",
+    "controls": [
+     "C17",
+     "C19"
+    ],
+    "techniques": [
+     "T1005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "S10",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Country comparison",
+    "ref": "inquiry/country-comparison",
+    "desc": "Whether every session occurred in the same country as the address stated on the inquiry.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005",
+     "T5005"
+    ]
+   },
+   {
+    "id": "S11",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Impossible travel geolocation",
+    "ref": "inquiry/gps-impossible-travel",
+    "desc": "Probability that two session locations are too far apart to have been travelled between in the elapsed time.",
+    "controls": [
+     "C17",
+     "C19"
+    ],
+    "techniques": [
+     "T6004",
+     "T1005"
+    ]
+   },
+   {
+    "id": "S12",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "Geolocation language mismatch",
+    "ref": "inquiry/gps-language-mismatch",
+    "desc": "Whether the locale chosen in the last session disagrees with the country inferred from session location.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1005",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S13",
+    "kind": "signal",
+    "group": "signal-network",
+    "name": "TLS certificate fingerprint",
+    "ref": "inquiry/tls-cert-fingerprint",
+    "desc": "Fingerprint of the TLS certificate the client observed, which surfaces interception between client and service.",
+    "controls": [
+     "C10"
+    ],
+    "techniques": [
+     "T4001"
+    ]
+   },
+   {
+    "id": "S14",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Rooted device detected",
+    "ref": "inquiry/rooted-device-detected",
+    "desc": "Whether the user holds root access on the device used for verification.",
+    "controls": [
+     "C06"
+    ],
+    "techniques": [
+     "T1002",
+     "T3002"
+    ]
+   },
+   {
+    "id": "S15",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Device or app tampering",
+    "ref": "inquiry/device-or-app-tampering",
+    "desc": "Whether technologies used to modify the app, SDK, or operating system were detected in any session.",
+    "controls": [
+     "C06"
+    ],
+    "techniques": [
+     "T1003",
+     "T1004",
+     "T3002"
+    ]
+   },
+   {
+    "id": "S16",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Apple app attestation",
+    "ref": "inquiry/apple-app-attestation",
+    "desc": "Verifies iOS app integrity, flagging requests that come from a suspicious app version.",
+    "controls": [
+     "C04"
+    ],
+    "techniques": [
+     "T1003",
+     "T3002"
+    ]
+   },
+   {
+    "id": "S17",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Google Play Integrity",
+    "ref": "inquiry/google-play-integrity",
+    "desc": "Verifies Android app integrity and reports the highest device integrity level across sessions.",
+    "controls": [
+     "C04"
+    ],
+    "techniques": [
+     "T1003",
+     "T1002"
+    ]
+   },
+   {
+    "id": "S18",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Bundle names",
+    "ref": "inquiry/bundle-names",
+    "desc": "Application bundle identifiers seen across sessions, flagged as anomalous where the template pins one.",
+    "controls": [
+     "C04",
+     "C06"
+    ],
+    "techniques": [
+     "T1003"
+    ]
+   },
+   {
+    "id": "S19",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "User agent spoof attempts",
+    "ref": "inquiry/user-agent-spoof-attempts",
+    "desc": "Count of sessions whose device or browser information was masked, altered, or falsified.",
+    "controls": [
+     "C06",
+     "C07"
+    ],
+    "techniques": [
+     "T1006",
+     "T1001"
+    ]
+   },
+   {
+    "id": "S20",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Request spoof attempts",
+    "ref": "inquiry/request-spoof-attempts",
+    "desc": "Count of requests showing tampering or manipulation across all sessions.",
+    "controls": [
+     "C06",
+     "C10"
+    ],
+    "techniques": [
+     "T4001",
+     "T1004"
+    ]
+   },
+   {
+    "id": "S21",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Mismatched user agent count",
+    "ref": "inquiry/mismatched-user-agent-count",
+    "desc": "Distinct user agents differing from the original session’s, where a non-zero value suggests the session token moved devices.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4002"
+    ]
+   },
+   {
+    "id": "S22",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Curl request detected",
+    "ref": "inquiry/curl-request-detected",
+    "desc": "Whether a device that accessed the inquiry looks like a command-line HTTP client rather than a browser.",
+    "controls": [
+     "C06"
+    ],
+    "techniques": [
+     "T1006"
+    ]
+   },
+   {
+    "id": "S23",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Incognito browsing detected",
+    "ref": "inquiry/incognito-browsing-detected",
+    "desc": "Whether any browser used in the inquiry was in private browsing mode.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1006"
+    ]
+   },
+   {
+    "id": "S24",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Devtools open",
+    "ref": "inquiry/devtools-open",
+    "desc": "Whether browser developer tools were open during the flow.",
+    "controls": [
+     "C06"
+    ],
+    "techniques": [
+     "T1004",
+     "T1006"
+    ]
+   },
+   {
+    "id": "S25",
+    "kind": "signal",
+    "group": "signal-device",
+    "name": "Unrecognised referer",
+    "ref": "inquiry/unrecognized-referer",
+    "desc": "Whether a session arrived from a referer outside the domains allowed on the template.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4002",
+     "T4001"
+    ]
+   },
+   {
+    "id": "S26",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Virtual camera risk level",
+    "ref": "inquiry/virtual-camera-risk-level",
+    "desc": "Likelihood a virtual camera supplied pre-recorded or generated media during selfie or document capture.",
+    "controls": [
+     "C05"
+    ],
+    "techniques": [
+     "T3001",
+     "T3004",
+     "T3005"
+    ]
+   },
+   {
+    "id": "S27",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Virtual camera detected",
+    "ref": "verification/any-virtual-camera-detected",
+    "desc": "Whether any virtual-camera indication was raised during the verification.",
+    "controls": [
+     "C05"
+    ],
+    "techniques": [
+     "T3001",
+     "T3002"
+    ]
+   },
+   {
+    "id": "S28",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Any uploaded",
+    "ref": "verification/any-uploaded",
+    "desc": "Whether any image was uploaded as a file rather than captured through a live camera.",
+    "controls": [
+     "C01",
+     "C05"
+    ],
+    "techniques": [
+     "T4003",
+     "T2006"
+    ]
+   },
+   {
+    "id": "S29",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Camera count",
+    "ref": "verification/camera-count",
+    "desc": "Total cameras the device reported during capture, which is how an added virtual source surfaces.",
+    "controls": [
+     "C05"
+    ],
+    "techniques": [
+     "T3001"
+    ]
+   },
+   {
+    "id": "S30",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "All camera labels",
+    "ref": "verification/all-camera-labels",
+    "desc": "Device labels of every camera enumerated during the capture sequence.",
+    "controls": [
+     "C05"
+    ],
+    "techniques": [
+     "T3001",
+     "T3003"
+    ]
+   },
+   {
+    "id": "S31",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Camera frame rate",
+    "ref": "verification/camera-frame-rate",
+    "desc": "Frames per second of the selected camera, which injected media frequently reports implausibly.",
+    "controls": [
+     "C08",
+     "C07"
+    ],
+    "techniques": [
+     "T3003",
+     "T3001"
+    ]
+   },
+   {
+    "id": "S32",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Camera facing mode",
+    "ref": "verification/camera-facing-mode",
+    "desc": "Which way the camera used for capture was facing.",
+    "controls": [
+     "C05",
+     "C07"
+    ],
+    "techniques": [
+     "T3001"
+    ]
+   },
+   {
+    "id": "S33",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Gyroscope factor",
+    "ref": "verification/gyroscope-factor",
+    "desc": "Average gyroscope movement during capture, because a real handheld capture is never perfectly still.",
+    "controls": [
+     "C07",
+     "C08"
+    ],
+    "techniques": [
+     "T3001",
+     "T3003"
+    ]
+   },
+   {
+    "id": "S34",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "First image dimensions",
+    "ref": "verification/first-image-dimensions",
+    "desc": "Pixel dimensions of the first captured image, checked for consistency with the claimed device.",
+    "controls": [
+     "C07"
+    ],
+    "techniques": [
+     "T3001",
+     "T4003"
+    ]
+   },
+   {
+    "id": "S35",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Device name missing",
+    "ref": "verification/device-name-missing",
+    "desc": "Whether the session has no device name, which can indicate the verification did not come from a real device.",
+    "controls": [
+     "C07"
+    ],
+    "techniques": [
+     "T4003",
+     "T1001"
+    ]
+   },
+   {
+    "id": "S36",
+    "kind": "signal",
+    "group": "signal-capture",
+    "name": "Max selfie liveness risk level",
+    "ref": "inquiry/selfie-liveness-risk-level",
+    "desc": "Highest liveness risk across the inquiry’s verifications, signalling media that may be fake, altered, or generated.",
+    "controls": [
+     "C16"
+    ],
+    "techniques": [
+     "T2002",
+     "T2005",
+     "T3004"
+    ]
+   },
+   {
+    "id": "S37",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Bot score",
+    "ref": "inquiry/bot-score",
+    "desc": "Score from 0 to 100 for the likelihood the inquiry was submitted by a bot.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1006"
+    ]
+   },
+   {
+    "id": "S38",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Behaviour threat level",
+    "ref": "inquiry/behavior-threat-level",
+    "desc": "Behaviour risk summarised from network, device, and user-behaviour evidence.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T1006",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S39",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Behaviour anomaly",
+    "ref": "inquiry/behavior-anomaly",
+    "desc": "Unsupervised modelling that flags groups of inquiries anomalous at population level rather than individually.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "S40",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Session count",
+    "ref": "inquiry/session-count",
+    "desc": "How many sessions were started before the inquiry completed; three or more can mean several devices.",
+    "controls": [
+     "C09",
+     "C18"
+    ],
+    "techniques": [
+     "T4002",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S41",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Sessions geolocation delta",
+    "ref": "inquiry/sessions-geolocation-delta",
+    "desc": "Largest distance between two session locations on the same inquiry.",
+    "controls": [
+     "C17",
+     "C09"
+    ],
+    "techniques": [
+     "T6001",
+     "T4002"
+    ]
+   },
+   {
+    "id": "S42",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Time to complete",
+    "ref": "verification/time-to-complete",
+    "desc": "Seconds between verification creation and submission; very short durations suggest automated submission.",
+    "controls": [
+     "C08"
+    ],
+    "techniques": [
+     "T1006"
+    ]
+   },
+   {
+    "id": "S43",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Shortcut pastes",
+    "ref": "inquiry/shortcut-pastes",
+    "desc": "Count of keyboard paste events across sessions, which is how a supplied identity dossier is usually entered.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T5005",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S44",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Distraction events",
+    "ref": "inquiry/distraction-events",
+    "desc": "How many times the user left the flow window during the inquiry.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T6001"
+    ]
+   },
+   {
+    "id": "S45",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Hesitation ratio",
+    "ref": "inquiry/hesitation-ratio",
+    "desc": "Share of total flow time in which the user made no input.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T6001"
+    ]
+   },
+   {
+    "id": "S46",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Off-hours session",
+    "ref": "inquiry/off-hours-session",
+    "desc": "Local start time of the latest session, converted using the timezone inferred from IP geolocation.",
+    "controls": [
+     "C17"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "S47",
+    "kind": "signal",
+    "group": "signal-behaviour",
+    "name": "Reusable persona used",
+    "ref": "inquiry/reusable-persona-used",
+    "desc": "Whether the end user authenticated into an existing persona rather than establishing a new one.",
+    "controls": [
+     "C22"
+    ],
+    "techniques": [
+     "T6002"
+    ]
+   },
+   {
+    "id": "S48",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "Selfie visual cluster score",
+    "ref": "verification/selfie-visual-cluster-v2-score",
+    "desc": "How visually similar the submitted selfie is to selfies already on file.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T4004",
+     "T6004",
+     "T2005"
+    ]
+   },
+   {
+    "id": "S49",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "Selfie visual cluster size",
+    "ref": "verification/selfie-visual-cluster-v2-size",
+    "desc": "How many other selfies on file look visually identical to this one.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T4004",
+     "T6004"
+    ]
+   },
+   {
+    "id": "S50",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "ID vision cluster score",
+    "ref": "verification/id-visual-cluster-v2-score",
+    "desc": "How closely the submitted ID resembles other IDs seen with the same layout.",
+    "controls": [
+     "C18",
+     "C20"
+    ],
+    "techniques": [
+     "T5001",
+     "T5004",
+     "T6004"
+    ]
+   },
+   {
+    "id": "S51",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "ID vision cluster size",
+    "ref": "verification/id-visual-cluster-v2-size",
+    "desc": "How many IDs on file look visually identical to this one, which is the signature of one template used at volume.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T5004",
+     "T6004"
+    ]
+   },
+   {
+    "id": "S52",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "Government ID inconsistent repeat count",
+    "ref": "inquiry/government-id-inconsistent-repeat-mismatch-count",
+    "desc": "How many mismatches the inconsistent-repeat check found for the document.",
+    "controls": [
+     "C18"
+    ],
+    "techniques": [
+     "T4004"
+    ]
+   },
+   {
+    "id": "S53",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "IP impossible travel",
+    "ref": "verification/ip-impossible-travel",
+    "desc": "Risk that activity linked to the matched identity occurred in places too far apart for the elapsed time.",
+    "controls": [
+     "C19",
+     "C17"
+    ],
+    "techniques": [
+     "T6004",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S54",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "Devices count",
+    "ref": "verification/devices-count",
+    "desc": "How many distinct devices are linked to the matched identity.",
+    "controls": [
+     "C19",
+     "C18"
+    ],
+    "techniques": [
+     "T6004",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S55",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "First seen days ago",
+    "ref": "verification/first-seen-days-ago",
+    "desc": "Days since the earliest recorded activity for the matched identity, which is tenure a cultivated identity has to buy.",
+    "controls": [
+     "C19",
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ]
+   },
+   {
+    "id": "S56",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "Public figure name detected",
+    "ref": "verification/public-figure-name-detected",
+    "desc": "Whether the verification’s full name exactly matches a known public figure.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5004"
+    ]
+   },
+   {
+    "id": "S57",
+    "kind": "signal",
+    "group": "signal-population",
+    "name": "Address street entropy",
+    "ref": "verification/address-street-entropy",
+    "desc": "Entropy of the street address on an ID; repeating or sequential digits suggest a fabricated address.",
+    "controls": [
+     "C11",
+     "C14"
+    ],
+    "techniques": [
+     "T5001",
+     "T5005"
+    ]
+   },
+   {
+    "id": "S58",
+    "kind": "signal",
+    "group": "signal-account",
+    "name": "Inquiry velocity",
+    "ref": "account/inquiry-velocity",
+    "desc": "Inquiries created on the account inside a configured window; high velocity suggests automated abuse.",
+    "controls": [
+     "C18",
+     "C22"
+    ],
+    "techniques": [
+     "T1006",
+     "T6004"
+    ]
+   },
+   {
+    "id": "S59",
+    "kind": "signal",
+    "group": "signal-account",
+    "name": "Failed inquiries count",
+    "ref": "account/failed-inquiries-count",
+    "desc": "How many inquiries on the account were declined, which is how boundary-probing shows.",
+    "controls": [
+     "C18",
+     "C22"
+    ],
+    "techniques": [
+     "T1006"
+    ]
+   },
+   {
+    "id": "S60",
+    "kind": "signal",
+    "group": "signal-account",
+    "name": "Device count",
+    "ref": "account/device-count",
+    "desc": "How many distinct devices are associated with the account.",
+    "controls": [
+     "C22",
+     "C19"
+    ],
+    "techniques": [
+     "T6002",
+     "T6001"
+    ]
+   },
+   {
+    "id": "S61",
+    "kind": "signal",
+    "group": "signal-account",
+    "name": "Address update count",
+    "ref": "account/address-update-count",
+    "desc": "How many times account address fields changed inside a configured window.",
+    "controls": [
+     "C22"
+    ],
+    "techniques": [
+     "T6002",
+     "T6003"
+    ]
+   },
+   {
+    "id": "S62",
+    "kind": "signal",
+    "group": "signal-account",
+    "name": "List match count",
+    "ref": "account/list-match-count",
+    "desc": "Watchlist, sanctions, and block-list matches associated directly with the account.",
+    "controls": [
+     "C20",
+     "C22"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "S63",
+    "kind": "signal",
+    "group": "signal-account",
+    "name": "New mobile device used during reverification",
+    "ref": "inquiry/new-mobile-device-used-during-reverification",
+    "desc": "Whether a device in this inquiry has not appeared in the account’s five most recent completed inquiries.",
+    "controls": [
+     "C22",
+     "C17"
+    ],
+    "techniques": [
+     "T6002",
+     "T6003"
+    ]
+   },
+   {
+    "id": "G01",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Device fingerprint",
+    "desc": "Any device fingerprint collected during one of the account’s inquiries.",
+    "controls": [
+     "C19",
+     "C17"
+    ],
+    "techniques": [
+     "T6004",
+     "T4004"
+    ]
+   },
+   {
+    "id": "G02",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Browser fingerprint",
+    "desc": "Any browser fingerprint collected during one of the account’s inquiries.",
+    "controls": [
+     "C19",
+     "C17"
+    ],
+    "techniques": [
+     "T6004",
+     "T1006"
+    ]
+   },
+   {
+    "id": "G03",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "IP address",
+    "desc": "Any IP address used while completing one of the account’s inquiries.",
+    "controls": [
+     "C19",
+     "C17"
+    ],
+    "techniques": [
+     "T6004",
+     "T1005"
+    ]
+   },
+   {
+    "id": "G04",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Government ID number",
+    "desc": "Any ID number read from a government ID collected during an account inquiry.",
+    "controls": [
+     "C19",
+     "C18"
+    ],
+    "techniques": [
+     "T4004",
+     "T5003",
+     "T6004"
+    ]
+   },
+   {
+    "id": "G05",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Social security number",
+    "desc": "Any social security number collected during one of the account’s inquiries.",
+    "controls": [
+     "C19",
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "G06",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Phone number",
+    "desc": "Any phone number collected during one of the account’s inquiries.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004",
+     "T6003"
+    ]
+   },
+   {
+    "id": "G07",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Email address",
+    "desc": "Any email address collected during one of the account’s inquiries.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G08",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Address",
+    "desc": "Any primary address associated with the account’s inquiries, normalised and validated before it enters Graph.",
+    "controls": [
+     "C19",
+     "C14"
+    ],
+    "techniques": [
+     "T6004",
+     "T5005"
+    ]
+   },
+   {
+    "id": "G09",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Name",
+    "desc": "The account’s full name.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G10",
+    "kind": "graph",
+    "group": "graph-node",
+    "name": "Birthdate",
+    "desc": "The account’s birthdate.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T5005",
+     "T6004"
+    ]
+   },
+   {
+    "id": "G11",
+    "kind": "graph",
+    "group": "graph-structure",
+    "name": "Linked via",
+    "desc": "An edge joining two account nodes that share a property, which is the structure a ring produces and a single attempt cannot.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004",
+     "T4004"
+    ]
+   },
+   {
+    "id": "G12",
+    "kind": "graph",
+    "group": "graph-structure",
+    "name": "Linked to",
+    "desc": "An edge joining an account node to a property node the account has.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G13",
+    "kind": "graph",
+    "group": "graph-structure",
+    "name": "Cluster",
+    "desc": "A group of account nodes all linked to the same property node, which is the star pattern that can be blocked at its hub.",
+    "controls": [
+     "C19",
+     "C18"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G14",
+    "kind": "graph",
+    "group": "graph-structure",
+    "name": "Cluster size",
+    "desc": "The number of nodes in a cluster, which is what separates a household from a ring.",
+    "controls": [
+     "C19",
+     "C18"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G15",
+    "kind": "graph",
+    "group": "graph-structure",
+    "name": "Hops",
+    "desc": "Distance from a connected node to a starting node, counted in edges; a chain needs more hops than a star.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G16",
+    "kind": "graph",
+    "group": "graph-structure",
+    "name": "Starting nodes",
+    "desc": "The initial accounts of interest in a query, which is the seed set the traversal expands from.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ]
+   },
+   {
+    "id": "G17",
+    "kind": "graph",
+    "group": "graph-surface",
+    "name": "Graph Explorer",
+    "desc": "The visual interface for running a query and exploring its results on the canvas.",
+    "controls": [
+     "C19",
+     "C21"
+    ],
+    "techniques": [
+     "T6004",
+     "T6001"
+    ],
+    "doc": {
+     "label": "Graph Explorer interface",
+     "url": "https://help.withpersona.com/articles/7DbcO4qiCbn4aY0Oc5iO8W/"
+    }
+   },
+   {
+    "id": "G18",
+    "kind": "graph",
+    "group": "graph-surface",
+    "name": "Query",
+    "desc": "A search defining which accounts to surface, specified by at least one property and value.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "Running graph queries",
+     "url": "https://docs.withpersona.com/running-graph-queries"
+    }
+   },
+   {
+    "id": "G19",
+    "kind": "graph",
+    "group": "graph-surface",
+    "name": "Query template",
+    "desc": "A preconfigured query saved for reuse, which is how a confirmed ring pattern becomes a standing check.",
+    "controls": [
+     "C19",
+     "C22"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "Graph query templates",
+     "url": "https://docs.withpersona.com/graph-query-templates"
+    }
+   },
+   {
+    "id": "G20",
+    "kind": "graph",
+    "group": "graph-surface",
+    "name": "Maximum hops",
+    "desc": "The furthest edge distance a connected account may sit from a starting node, which bounds the traversal.",
+    "controls": [
+     "C19"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "Running graph queries",
+     "url": "https://docs.withpersona.com/running-graph-queries"
+    }
+   },
+   {
+    "id": "M01",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "LexisNexis InstantID",
+    "desc": "Retrieves identity information to corroborate a claimed identity and strengthen fraud detection.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T5001"
+    ],
+    "doc": {
+     "label": "LexisNexis integration",
+     "url": "https://help.withpersona.com/articles/2IR16yImBHyc2D5ayvs87C/"
+    }
+   },
+   {
+    "id": "M02",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "Prove",
+    "desc": "Adds phone-centric identity and possession signals to a workflow.",
+    "controls": [
+     "C14",
+     "C23"
+    ],
+    "techniques": [
+     "T6003",
+     "T5005"
+    ],
+    "doc": {
+     "label": "Prove integration",
+     "url": "https://help.withpersona.com/articles/rzENHOKhBM9MGjCAYdMqe/"
+    }
+   },
+   {
+    "id": "M03",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "AtData",
+    "desc": "Enriches an email identity with deliverability, activity, and fraud-risk signals.",
+    "controls": [
+     "C14",
+     "C17"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "AtData integration",
+     "url": "https://help.withpersona.com/articles/11HL0QKjwst0cno05JDbrW/"
+    }
+   },
+   {
+    "id": "M04",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "Clearbit",
+    "desc": "Enriches people and companies from an email address or domain.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Clearbit integration",
+     "url": "https://help.withpersona.com/articles/oFXiN9UhYPJ8QACppAds0/"
+    }
+   },
+   {
+    "id": "M05",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "FullContact",
+    "desc": "Enriches an identity profile with person and contact information.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "FullContact integration",
+     "url": "https://help.withpersona.com/articles/vH4zT2kN9mQ7pL6xR3cB8s/"
+    }
+   },
+   {
+    "id": "M06",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "MX",
+    "desc": "Verifies a bank account and compares the account-holder name against the claimed identity.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T6001"
+    ],
+    "doc": {
+     "label": "MX integration",
+     "url": "https://help.withpersona.com/articles/3ypIdJ9UFqWt44nlyKF3WZ/"
+    }
+   },
+   {
+    "id": "M07",
+    "kind": "marketplace",
+    "group": "mk-identity",
+    "name": "VerifyMy",
+    "desc": "Adds age-assurance and identity-verification capability to a workflow.",
+    "controls": [
+     "C14",
+     "C23"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "VerifyMy integration",
+     "url": "https://help.withpersona.com/articles/4jQlPiE68KcLjNTLox1tsc/"
+    }
+   },
+   {
+    "id": "M08",
+    "kind": "marketplace",
+    "group": "mk-fraud",
+    "name": "SentiLink",
+    "desc": "Returns synthetic-identity, identity-theft, and first-party fraud risk scores.",
+    "controls": [
+     "C20",
+     "C14"
+    ],
+    "techniques": [
+     "T5005",
+     "T6001"
+    ],
+    "doc": {
+     "label": "SentiLink integration",
+     "url": "https://help.withpersona.com/articles/2aYEhpHKbRvd2GWieHIbkv/"
+    }
+   },
+   {
+    "id": "M09",
+    "kind": "marketplace",
+    "group": "mk-fraud",
+    "name": "Mastercard Identity",
+    "desc": "Returns identity, network, and IP risk scores from submitted identity signals.",
+    "controls": [
+     "C20",
+     "C17"
+    ],
+    "techniques": [
+     "T5005",
+     "T1005"
+    ],
+    "doc": {
+     "label": "Mastercard Identity integration",
+     "url": "https://help.withpersona.com/articles/4SFGm3QeBmV8b67i790uW7/"
+    }
+   },
+   {
+    "id": "M10",
+    "kind": "marketplace",
+    "group": "mk-fraud",
+    "name": "CRS Credit",
+    "desc": "Retrieves credit and identity data for verification and risk decisions.",
+    "controls": [
+     "C14"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "CRS Credit integration",
+     "url": "https://help.withpersona.com/articles/hViKfl505UuxUG9rcTGZO/"
+    }
+   },
+   {
+    "id": "M11",
+    "kind": "marketplace",
+    "group": "mk-fraud",
+    "name": "Nova Credit",
+    "desc": "Retrieves cross-border credit data, which reaches recent arrivals a domestic file does not cover.",
+    "controls": [
+     "C14",
+     "C24"
+    ],
+    "techniques": [
+     "T5005"
+    ],
+    "doc": {
+     "label": "Nova Credit integration",
+     "url": "https://help.withpersona.com/articles/4ii9GelrUPReTcOQERMH8f/"
+    }
+   },
+   {
+    "id": "M12",
+    "kind": "marketplace",
+    "group": "mk-fraud",
+    "name": "PhotoDNA",
+    "desc": "Detects known harmful imagery by comparing image hashes against PhotoDNA data.",
+    "controls": [
+     "C20"
+    ],
+    "techniques": [
+     "T5004"
+    ],
+    "doc": {
+     "label": "PhotoDNA integration",
+     "url": "https://help.withpersona.com/articles/1GLwOKRvCzuaphwwUD0E7s/"
+    }
+   },
+   {
+    "id": "M13",
+    "kind": "marketplace",
+    "group": "mk-crypto",
+    "name": "Chainalysis",
+    "desc": "Screens cryptocurrency addresses and transactions for risk from inside a workflow.",
+    "controls": [
+     "C20",
+     "C22"
+    ],
+    "techniques": [
+     "T6004",
+     "T6001"
+    ],
+    "doc": {
+     "label": "Chainalysis integration",
+     "url": "https://help.withpersona.com/articles/7ykrjzOJl668pf6QFThNWH/"
+    }
+   },
+   {
+    "id": "M14",
+    "kind": "marketplace",
+    "group": "mk-crypto",
+    "name": "TRM Labs",
+    "desc": "Screens cryptocurrency wallets and transactions for financial-crime risk.",
+    "controls": [
+     "C20",
+     "C22"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "TRM Labs integration",
+     "url": "https://help.withpersona.com/articles/5yal3xQnhclQIsXxWYVBR7/"
+    }
+   },
+   {
+    "id": "M15",
+    "kind": "marketplace",
+    "group": "mk-crypto",
+    "name": "Notabene",
+    "desc": "Supports Travel Rule compliance by exchanging counterparty information for a transfer.",
+    "controls": [
+     "C22"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "Notabene integration",
+     "url": "https://help.withpersona.com/articles/6KcpCwgRpYu6DW6PynmvkI/"
+    }
+   },
+   {
+    "id": "M16",
+    "kind": "marketplace",
+    "group": "mk-workforce",
+    "name": "Okta",
+    "desc": "Triggers workforce verification, retrieves user data, and automates account actions in identity management.",
+    "controls": [
+     "C23",
+     "C22"
+    ],
+    "techniques": [
+     "T6002",
+     "T6003"
+    ],
+    "doc": {
+     "label": "Okta integration",
+     "url": "https://help.withpersona.com/articles/4w8cDQLPuaPAadq4LzhO40/"
+    }
+   },
+   {
+    "id": "M17",
+    "kind": "marketplace",
+    "group": "mk-workforce",
+    "name": "Microsoft Entra",
+    "desc": "Adds employee profile data and identity verification to access-management workflows.",
+    "controls": [
+     "C23",
+     "C22"
+    ],
+    "techniques": [
+     "T6002",
+     "T6003"
+    ],
+    "doc": {
+     "label": "Microsoft Entra integration",
+     "url": "https://help.withpersona.com/articles/76oPGnRkduS3sHbEpLNSku/"
+    }
+   },
+   {
+    "id": "M18",
+    "kind": "marketplace",
+    "group": "mk-workforce",
+    "name": "Cisco Duo",
+    "desc": "Verifies workforce identity during helpdesk interactions and remote employee onboarding.",
+    "controls": [
+     "C23",
+     "C21"
+    ],
+    "techniques": [
+     "T6003"
+    ],
+    "doc": {
+     "label": "Cisco Duo integration",
+     "url": "https://help.withpersona.com/articles/3X6a18zEROUh8In5Oeo23O/"
+    }
+   },
+   {
+    "id": "M19",
+    "kind": "marketplace",
+    "group": "mk-workforce",
+    "name": "Auth0",
+    "desc": "Retrieves user profiles, verified contacts, login activity, and identities for an access decision.",
+    "controls": [
+     "C22",
+     "C17"
+    ],
+    "techniques": [
+     "T6002"
+    ],
+    "doc": {
+     "label": "Auth0 integration",
+     "url": "https://help.withpersona.com/articles/22gZwB4z1ZFdAfFVwiP2P5/"
+    }
+   },
+   {
+    "id": "M20",
+    "kind": "marketplace",
+    "group": "mk-workforce",
+    "name": "Stytch",
+    "desc": "Retrieves authentication profiles, verified contacts, OAuth identities, and passkey registrations.",
+    "controls": [
+     "C22"
+    ],
+    "techniques": [
+     "T6002"
+    ],
+    "doc": {
+     "label": "Stytch integration",
+     "url": "https://help.withpersona.com/articles/6sFPzB8Ud8AVR9WsuvQM4c/"
+    }
+   },
+   {
+    "id": "M21",
+    "kind": "marketplace",
+    "group": "mk-workforce",
+    "name": "Yardstik",
+    "desc": "Connects workforce background-screening information to a Persona workflow.",
+    "controls": [
+     "C20",
+     "C21"
+    ],
+    "techniques": [
+     "T6001"
+    ],
+    "doc": {
+     "label": "Yardstik integration",
+     "url": "https://help.withpersona.com/articles/2cvnPIzAcuxukLQE3UsMw9/"
+    }
+   },
+   {
+    "id": "M22",
+    "kind": "marketplace",
+    "group": "mk-operations",
+    "name": "Twilio",
+    "desc": "Retrieves SMS, messaging, and account data for use inside a workflow.",
+    "controls": [
+     "C14",
+     "C23"
+    ],
+    "techniques": [
+     "T6003"
+    ],
+    "doc": {
+     "label": "Twilio integration",
+     "url": "https://help.withpersona.com/articles/2iPLwfpHPTg8kYnvLjVubA/"
+    }
+   },
+   {
+    "id": "M23",
+    "kind": "marketplace",
+    "group": "mk-operations",
+    "name": "Slack",
+    "desc": "Sends targeted identity-event alerts to a channel or an individual reviewer.",
+    "controls": [
+     "C21",
+     "C22"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "Slack integration",
+     "url": "https://help.withpersona.com/articles/7FlnOvBKFu6k7sunbzQH0K/"
+    }
+   },
+   {
+    "id": "M24",
+    "kind": "marketplace",
+    "group": "mk-operations",
+    "name": "Shopify",
+    "desc": "Pushes Persona identity signals into order-risk assessment.",
+    "controls": [
+     "C22"
+    ],
+    "techniques": [
+     "T6002",
+     "T6001"
+    ],
+    "doc": {
+     "label": "Shopify integration",
+     "url": "https://help.withpersona.com/articles/6aE5mm1xjsPkhPpoaujzVq/"
+    }
+   },
+   {
+    "id": "M25",
+    "kind": "marketplace",
+    "group": "mk-operations",
+    "name": "Anthropic",
+    "desc": "Generates summaries and decision support for a reviewer from workflow data.",
+    "controls": [
+     "C21"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "Anthropic integration",
+     "url": "https://help.withpersona.com/articles/4ItMteIsKhrKaEyBIg76l8/"
+    }
+   },
+   {
+    "id": "M26",
+    "kind": "marketplace",
+    "group": "mk-operations",
+    "name": "OpenAI",
+    "desc": "Generates text from workflow data through an action step.",
+    "controls": [
+     "C21"
+    ],
+    "techniques": [
+     "T6004"
+    ],
+    "doc": {
+     "label": "OpenAI integration",
+     "url": "https://help.withpersona.com/articles/47mo9PsRf2qgP95wFk1NVQ/"
+    }
+   },
+   {
+    "id": "X01",
+    "kind": "config",
+    "group": "cfg-capture",
+    "name": "Capture methods",
+    "ref": "Capture Methods",
+    "desc": "Chooses, per device type, whether the user may capture a new photo or upload an existing image.",
+    "controls": [
+     "C01",
+     "C05"
+    ],
+    "techniques": [
+     "T4003",
+     "T2006"
+    ]
+   },
+   {
+    "id": "X02",
+    "kind": "config",
+    "group": "cfg-capture",
+    "name": "Capture a new photo",
+    "ref": "capture a new photo",
+    "desc": "Restricting to live camera capture is what produces motion, behavioural, device, and real-time metadata at all.",
+    "controls": [
+     "C01",
+     "C02"
+    ],
+    "techniques": [
+     "T4003",
+     "T2006"
+    ]
+   },
+   {
+    "id": "X03",
+    "kind": "config",
+    "group": "cfg-capture",
+    "name": "Upload an existing image",
+    "ref": "upload an existing image",
+    "desc": "Permitting file upload admits images that can be reused, shared, spoofed, or edited before submission.",
+    "controls": [
+     "C01"
+    ],
+    "techniques": [
+     "T4003",
+     "T5002"
+    ]
+   },
+   {
+    "id": "X04",
+    "kind": "config",
+    "group": "cfg-capture",
+    "name": "Selfie poses: centre, left, and right",
+    "ref": "Images of individual selfie poses looking center, left, and right",
+    "desc": "Collects the default three poses, which is what liveness and three-point comparison read.",
+    "controls": [
+     "C03",
+     "C16"
+    ],
+    "techniques": [
+     "T2001",
+     "T2002",
+     "T2004"
+    ],
+    "doc": {
+     "label": "Selfie Verification",
+     "url": "https://help.withpersona.com/articles/1l0WTbR5UsfiggNDPWbnUp/"
+    }
+   },
+   {
+    "id": "X05",
+    "kind": "config",
+    "group": "cfg-capture",
+    "name": "Centre-only checks",
+    "ref": "center-only checks",
+    "desc": "Using the centre-facing selfie alone removes the pose challenge and the parallax it produces.",
+    "controls": [
+     "C03"
+    ],
+    "techniques": [
+     "T2001",
+     "T2002"
+    ],
+    "doc": {
+     "label": "Selfie Verification",
+     "url": "https://help.withpersona.com/articles/1l0WTbR5UsfiggNDPWbnUp/"
+    }
+   },
+   {
+    "id": "X06",
+    "kind": "config",
+    "group": "cfg-capture",
+    "name": "NFC verification",
+    "ref": "NFC Verification",
+    "desc": "Reads the chip on ICAO-compliant passports and supported identity documents through a mobile SDK integration.",
+    "controls": [
+     "C13"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ],
+    "doc": {
+     "label": "Collecting passports and other IDs using NFC",
+     "url": "https://help.withpersona.com/articles/1iu1Fak8y9RiOE2FddXrHJ/"
+    }
+   },
+   {
+    "id": "X07",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Mobile SDK",
+    "ref": "Mobile SDK",
+    "desc": "A native integration, and the only model in which platform attestation is available at all.",
+    "controls": [
+     "C04",
+     "C01"
+    ],
+    "techniques": [
+     "T1003",
+     "T3002"
+    ]
+   },
+   {
+    "id": "X08",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Hosted Flow",
+    "ref": "Hosted Flow",
+    "desc": "Redirects the user to a Persona-hosted verification page.",
+    "controls": [
+     "C01"
+    ],
+    "techniques": [
+     "T1006"
+    ],
+    "doc": {
+     "label": "Hosted Flow",
+     "url": "https://docs.withpersona.com/hosted-flow"
+    }
+   },
+   {
+    "id": "X09",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Embedded Flow",
+    "ref": "Embedded Flow",
+    "desc": "Embeds the Persona interface in a website iframe; template-generated inquiries can duplicate on reload.",
+    "controls": [
+     "C01"
+    ],
+    "techniques": [
+     "T1006"
+    ],
+    "doc": {
+     "label": "Embedded Flow",
+     "url": "https://docs.withpersona.com/embedded-flow"
+    }
+   },
+   {
+    "id": "X10",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Transactions-based integration",
+    "ref": "Transactions-based integration",
+    "desc": "Uses the customer’s own capture interface, which is the configuration that removes capture context entirely.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4003"
+    ]
+   },
+   {
+    "id": "X11",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Create inquiries via API",
+    "ref": "Creating inquiries via API",
+    "desc": "Creating server-side prevents arbitrary mass creation and supports immutable prefilled fields.",
+    "controls": [
+     "C09",
+     "C18"
+    ],
+    "techniques": [
+     "T1006",
+     "T4002"
+    ],
+    "doc": {
+     "label": "Creating inquiries",
+     "url": "https://docs.withpersona.com/creating-inquiries"
+    }
+   },
+   {
+    "id": "X12",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Block client-side inquiry creation",
+    "ref": "Block client-side Inquiry creation",
+    "desc": "Disables client-side creation for a template, so an adversary cannot open unlimited attempts.",
+    "controls": [
+     "C09",
+     "C18"
+    ],
+    "techniques": [
+     "T1006"
+    ],
+    "doc": {
+     "label": "Creating inquiries",
+     "url": "https://docs.withpersona.com/creating-inquiries"
+    }
+   },
+   {
+    "id": "X13",
+    "kind": "config",
+    "group": "cfg-integration",
+    "name": "Reference ID",
+    "ref": "Reference ID",
+    "desc": "Associates every inquiry for one user with the same account, which is what makes repeat detection possible.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T4004",
+     "T6004"
+    ],
+    "doc": {
+     "label": "Reference IDs",
+     "url": "https://docs.withpersona.com/reference-ids"
+    }
+   },
+   {
+    "id": "X14",
+    "kind": "config",
+    "group": "cfg-session",
+    "name": "Inquiry one-time links",
+    "ref": "Inquiry One-Time Links (OTL)",
+    "desc": "Grants single-use access to resume an inquiry, rather than a reusable link anyone holding it can open.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4002"
+    ],
+    "doc": {
+     "label": "Inquiry one-time links",
+     "url": "https://docs.withpersona.com/inquiry-one-time-links"
+    }
+   },
+   {
+    "id": "X15",
+    "kind": "config",
+    "group": "cfg-session",
+    "name": "Inquiry session limit",
+    "ref": "Inquiry Session Limit",
+    "desc": "Caps how many sessions one inquiry may open, 25 by default, which bounds a captured link passed between devices.",
+    "controls": [
+     "C09",
+     "C18"
+    ],
+    "techniques": [
+     "T4002",
+     "T6001"
+    ],
+    "doc": {
+     "label": "Inquiry sessions",
+     "url": "https://docs.withpersona.com/inquiry-sessions"
+    }
+   },
+   {
+    "id": "X16",
+    "kind": "config",
+    "group": "cfg-session",
+    "name": "Expiration from inquiry pending",
+    "ref": "meta.expiration_after_start_interval_seconds",
+    "desc": "Shortens the window a started inquiry stays open, limiting how long a leaked link remains usable.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4002"
+    ],
+    "doc": {
+     "label": "Inquiry expiration",
+     "url": "https://docs.withpersona.com/inquiry-expiration"
+    }
+   },
+   {
+    "id": "X17",
+    "kind": "config",
+    "group": "cfg-session",
+    "name": "One-time link expiry",
+    "ref": "meta.one_time_link_expiration_seconds",
+    "desc": "Sets how long an authenticated access link stays valid.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4002"
+    ],
+    "doc": {
+     "label": "Inquiry expiration",
+     "url": "https://docs.withpersona.com/inquiry-expiration"
+    }
+   },
+   {
+    "id": "X18",
+    "kind": "config",
+    "group": "cfg-session",
+    "name": "Device handoff link",
+    "ref": "Device Handoff Link",
+    "desc": "Sets expiry for links that move an inquiry between devices, which should be as short as the use case tolerates.",
+    "controls": [
+     "C09"
+    ],
+    "techniques": [
+     "T4002",
+     "T6001"
+    ],
+    "doc": {
+     "label": "Inquiry expiration",
+     "url": "https://docs.withpersona.com/inquiry-expiration"
+    }
+   },
+   {
+    "id": "X19",
+    "kind": "config",
+    "group": "cfg-policy",
+    "name": "Required checks",
+    "ref": "required",
+    "desc": "A required check must pass for the verification to pass; the same check set behaves differently once it is non-required.",
+    "controls": [
+     "C23"
+    ],
+    "techniques": [
+     "T5001",
+     "T2002"
+    ]
+   },
+   {
+    "id": "X20",
+    "kind": "config",
+    "group": "cfg-policy",
+    "name": "Non-required checks",
+    "ref": "non-required",
+    "desc": "Records a check as context without failing the verification on it, useful while calibrating but risky as a resting state.",
+    "controls": [
+     "C23",
+     "C21"
+    ],
+    "techniques": [
+     "T5001"
+    ]
+   },
+   {
+    "id": "X21",
+    "kind": "config",
+    "group": "cfg-policy",
+    "name": "Acceptable countries",
+    "ref": "acceptable countries",
+    "desc": "Restricts government ID verification to selected issuing countries.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001"
+    ],
+    "doc": {
+     "label": "Government ID Verification",
+     "url": "https://help.withpersona.com/articles/5vXD7S7pQCq8Q9Z4RztxLw/"
+    }
+   },
+   {
+    "id": "X22",
+    "kind": "config",
+    "group": "cfg-policy",
+    "name": "Acceptable ID types",
+    "ref": "acceptable ID types",
+    "desc": "Restricts which document types the verification accepts, which retires known-weak layouts.",
+    "controls": [
+     "C11"
+    ],
+    "techniques": [
+     "T5001"
+    ],
+    "doc": {
+     "label": "Government ID Verification",
+     "url": "https://help.withpersona.com/articles/5vXD7S7pQCq8Q9Z4RztxLw/"
+    }
+   },
+   {
+    "id": "X23",
+    "kind": "config",
+    "group": "cfg-policy",
+    "name": "Reject IDs previously submitted by other accounts",
+    "ref": "Whether to reject IDs that were previously submitted by other accounts in your Persona organization",
+    "desc": "Rejects a document already associated with a different account in the organisation.",
+    "controls": [
+     "C18",
+     "C19"
+    ],
+    "techniques": [
+     "T4004",
+     "T5003"
+    ]
+   },
+   {
+    "id": "X24",
+    "kind": "config",
+    "group": "cfg-policy",
+    "name": "Require both sides of the ID",
+    "ref": "Whether to require both the front side and back side of the ID to be submitted",
+    "desc": "Collecting the back is what makes barcode and encoded-zone checks applicable rather than not applicable.",
+    "controls": [
+     "C12"
+    ],
+    "techniques": [
+     "T5001",
+     "T5002"
+    ]
+   },
+   {
+    "id": "X25",
+    "kind": "config",
+    "group": "cfg-workflow",
+    "name": "Conditional step",
+    "ref": "Conditional step",
+    "desc": "Branches on inquiry, report, case, or account data, so a step-up fires only where risk is elevated.",
+    "controls": [
+     "C23"
+    ],
+    "techniques": [
+     "T2005",
+     "T5005"
+    ]
+   },
+   {
+    "id": "X26",
+    "kind": "config",
+    "group": "cfg-workflow",
+    "name": "Run Report",
+    "ref": "Run Report",
+    "desc": "Runs a report when configured conditions are met, adding evidence the capture itself cannot supply.",
+    "controls": [
+     "C14",
+     "C20"
+    ],
+    "techniques": [
+     "T5005",
+     "T5003"
+    ]
+   },
+   {
+    "id": "X27",
+    "kind": "config",
+    "group": "cfg-workflow",
+    "name": "Mark Inquiry for Review",
+    "ref": "Mark Inquiry for Review",
+    "desc": "Routes an uncertain inquiry to human judgment rather than forcing an automated decision.",
+    "controls": [
+     "C21",
+     "C24"
+    ],
+    "techniques": [
+     "T5006",
+     "T5003"
+    ]
+   },
+   {
+    "id": "X28",
+    "kind": "config",
+    "group": "cfg-workflow",
+    "name": "Create Case",
+    "ref": "Create Case",
+    "desc": "Opens a case for investigation, which is where a cluster rather than a single attempt gets adjudicated.",
+    "controls": [
+     "C21",
+     "C19"
+    ],
+    "techniques": [
+     "T6004",
+     "T6001"
+    ]
+   },
+   {
+    "id": "X29",
+    "kind": "config",
+    "group": "cfg-workflow",
+    "name": "Teams",
+    "ref": "Teams",
+    "desc": "Groups reviewers and drives case-assignment policy, so review has defined ownership and an audit trail.",
+    "controls": [
+     "C21",
+     "C24"
+    ],
+    "techniques": [
+     "T5006"
+    ],
+    "doc": {
+     "label": "Teams in cases",
+     "url": "https://help.withpersona.com/articles/2Ucor7PGqindbKCAEVoTRV/"
+    }
+   },
+   {
+    "id": "X30",
+    "kind": "config",
+    "group": "cfg-embed",
+    "name": "Domain allowlist",
+    "ref": "domain allowlist",
+    "desc": "Restricts which domains may boot the embedded flow; subdomains must be listed separately.",
+    "controls": [
+     "C09",
+     "C10"
+    ],
+    "techniques": [
+     "T4001",
+     "T4002"
+    ]
+   },
+   {
+    "id": "X31",
+    "kind": "config",
+    "group": "cfg-embed",
+    "name": "Permissions-Policy",
+    "ref": "Permissions-Policy",
+    "desc": "Controls whether the parent document grants camera access; blocking it prevents ID and selfie capture outright.",
+    "controls": [
+     "C01"
+    ],
+    "techniques": [
+     "T4003"
+    ]
+   },
+   {
+    "id": "X32",
+    "kind": "config",
+    "group": "cfg-embed",
+    "name": "Sandbox attributes",
+    "ref": "sandboxAttributes",
+    "desc": "Overrides the default iframe sandbox; loosening it can impair the flow’s own security guarantees.",
+    "controls": [
+     "C10"
+    ],
+    "techniques": [
+     "T4001"
+    ]
+   }
+  ]
+ }
+}

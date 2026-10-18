@@ -1,0 +1,577 @@
+{
+ "source": {
+  "site": "https://threats.withpersona.com",
+  "appVersion": "1.001",
+  "copied": "2026-10-17"
+ },
+ "stages": [
+  {
+   "stage": "Subject",
+   "id": "ST",
+   "description": "The attacker chooses a subject",
+   "techniques": [
+    {
+     "id": "ST-01",
+     "name": "Real Person",
+     "desc": "The face belongs to a real person",
+     "subtechniques": [
+      "Victim’s face",
+      "Attacker’s face",
+      "Accomplice"
+     ]
+    },
+    {
+     "id": "ST-02",
+     "name": "Synthetic Person",
+     "desc": "The face is fully or partially generated",
+     "subtechniques": [
+      "Fully AI-generated face",
+      "Face swap",
+      "Partially regenerated face"
+     ]
+    },
+    {
+     "id": "ST-03",
+     "name": "Non-Human",
+     "desc": "A doll, mannequin, or other physical object",
+     "subtechniques": [
+      "Doll",
+      "Mannequin",
+      "Other non-human object"
+     ]
+    }
+   ]
+  },
+  {
+   "stage": "Asset Procurement",
+   "id": "AP",
+   "description": "How the attacker obtains or creates a selfie",
+   "techniques": [
+    {
+     "id": "AP-01",
+     "name": "No Change",
+     "desc": "Using a photo, video, or live capture without modification.",
+     "subtechniques": []
+    },
+    {
+     "id": "AP-02",
+     "name": "Face Swap",
+     "desc": "Swapping the target's face onto the attacker's face.",
+     "subtechniques": [
+      "Static image face swap",
+      "Video face swap",
+      "Real-time face swap"
+     ]
+    },
+    {
+     "id": "AP-03",
+     "name": "AI Image Generation",
+     "desc": "Using AI to generate a face.",
+     "subtechniques": [
+      "Diffusion-generated face",
+      "GAN-generated face",
+      "Prompt-generated identity"
+     ]
+    },
+    {
+     "id": "AP-04",
+     "name": "Phishing Flow",
+     "desc": "Sending victims phishing links to fake identity verification flows to collect selfies and ID images.",
+     "subtechniques": [
+      "Fake IDV flow that impersonates a real provider",
+      "Fake business that requests a selfie during onboarding",
+      "Scam account verification requests",
+      "Scams that incidentally capture content"
+     ]
+    },
+    {
+     "id": "AP-05",
+     "name": "Unauthorized Access",
+     "desc": "Using the identity of a nearby person, such as a friend, family member, or sleeping subject.",
+     "subtechniques": [
+      "Public or compromised photos",
+      "Stolen identity document",
+      "Unaware or sleeping victim"
+     ]
+    },
+    {
+     "id": "AP-06",
+     "name": "Identity Muling",
+     "desc": "Having a real person verify their identity and then share the account credentials.",
+     "subtechniques": [
+      "Paid verification",
+      "Shared verified account",
+      "Credential transfer"
+     ]
+    },
+    {
+     "id": "AP-07",
+     "name": "Masked Face",
+     "desc": "Altering the subject using a wig, makeup, drawn-on facial hair, glasses, or other disguise.",
+     "subtechniques": [
+      "Silicone",
+      "Resin",
+      "3D-printed",
+      "Fabric",
+      "Paper or cardboard",
+      "Prosthetic"
+     ]
+    }
+   ]
+  },
+  {
+   "stage": "Asset Refinement",
+   "id": "AR",
+   "description": "The attacker uses different techniques to alter the selfie and attempt to evade detection",
+   "techniques": [
+    {
+     "id": "AR-01",
+     "name": "No Refinement",
+     "desc": "The content isn't refined any further.",
+     "subtechniques": []
+    },
+    {
+     "id": "AR-02",
+     "name": "Physical Occlusion",
+     "desc": "The face is obscured with a physical object.",
+     "subtechniques": [
+      "Glasses",
+      "Hat or hood",
+      "Scarf or face covering",
+      "Facial hair"
+     ]
+    },
+    {
+     "id": "AR-03",
+     "name": "Physical Printing",
+     "desc": "Printing an image or object that resembles a face.",
+     "subtechniques": [
+      "Printed portrait",
+      "Paper mask",
+      "Mounted cutout"
+     ]
+    },
+    {
+     "id": "AR-04",
+     "name": "Artifact Suppression",
+     "desc": "Eliminating generation and fabrication artifacts that fraud detectors look for.",
+     "subtechniques": [
+      "Seam removal",
+      "Edge blending",
+      "Texture cleanup",
+      "Inpainting defects"
+     ]
+    },
+    {
+     "id": "AR-05",
+     "name": "Noise Injection",
+     "desc": "Adding characteristics of real camera capture, such as sensor noise and lens effects.",
+     "subtechniques": [
+      "Sensor noise",
+      "Film grain",
+      "Motion blur",
+      "Lens effects"
+     ]
+    },
+    {
+     "id": "AR-06",
+     "name": "Compression Manipulation",
+     "desc": "Exploiting lossy compression to destroy forensic traces.",
+     "subtechniques": [
+      "JPEG recompression",
+      "Codec conversion",
+      "Multiple lossy generations"
+     ]
+    },
+    {
+     "id": "AR-07",
+     "name": "Colour AND Lighting Matching",
+     "desc": "Manipulating the color and lighting profile of the asset or physical environment to evade detection.",
+     "subtechniques": [
+      "White-balance correction",
+      "Skin-tone matching",
+      "Shadow correction",
+      "Low-light capture"
+     ]
+    },
+    {
+     "id": "AR-08",
+     "name": "Resolution AND Format Matching",
+     "desc": "Adjusting technical characteristics, such as resolution and format, to match expected device output.",
+     "subtechniques": [
+      "Downscaling",
+      "Aspect-ratio crop",
+      "Bit-depth adjustment",
+      "Orientation matching"
+     ]
+    },
+    {
+     "id": "AR-09",
+     "name": "Metadata Sanitization",
+     "desc": "Removing or forging non-visual metadata that could reveal the fraud.",
+     "subtechniques": [
+      "EXIF stripping",
+      "Timestamp manipulation",
+      "Software fingerprint removal"
+     ]
+    },
+    {
+     "id": "AR-10",
+     "name": "Geometric Transformation",
+     "desc": "Applying small changes to an image in an attempt to evade hash-based detection.",
+     "subtechniques": [
+      "Horizontal flip",
+      "Rotation",
+      "Crop or scale shift",
+      "Affine warp"
+     ]
+    },
+    {
+     "id": "AR-11",
+     "name": "Background Outpainting",
+     "desc": "Generating or extending the background around the subject.",
+     "subtechniques": [
+      "Generated capture environment",
+      "Extended frame",
+      "Background replacement"
+     ]
+    },
+    {
+     "id": "AR-12",
+     "name": "Face Inpainting",
+     "desc": "Regenerating or replacing part of the face without changing the rest of the image.",
+     "subtechniques": [
+      "Regional face replacement",
+      "Feature regeneration",
+      "Partial facial modification"
+     ]
+    }
+   ]
+  },
+  {
+   "stage": "Delivery",
+   "id": "DL",
+   "description": "The attacker submits the selfie to the selfie verification request system.",
+   "techniques": [
+    {
+     "id": "DL-01",
+     "name": "Physical Presentation",
+     "desc": "Holding a physical object in front of the camera.",
+     "subtechniques": []
+    },
+    {
+     "id": "DL-02",
+     "name": "Screen Replay",
+     "desc": "Taking a picture or video of another screen that's displaying the selfie.",
+     "subtechniques": [
+      "Phone display",
+      "Monitor or television",
+      "Tablet",
+      "Video-call feed"
+     ]
+    },
+    {
+     "id": "DL-03",
+     "name": "Virtual Camera Injection",
+     "desc": "Intercepting the camera feed and substituting selfie content.",
+     "subtechniques": [
+      "Virtual camera software",
+      "Custom camera driver",
+      "Modified camera interface"
+     ]
+    },
+    {
+     "id": "DL-04",
+     "name": "API / SDK Injection",
+     "desc": "Submitting the content directly through or around the verification API or SDK.",
+     "subtechniques": [
+      "Direct API request",
+      "Modified SDK",
+      "Payload replacement",
+      "Session replay"
+     ]
+    },
+    {
+     "id": "DL-05",
+     "name": "Device Compromise",
+     "desc": "Compromising the capture device to bypass integrity checks and camera API controls.",
+     "subtechniques": [
+      "Rooted or jailbroken device",
+      "Emulator",
+      "Modified camera stack",
+      "API hooks"
+     ]
+    }
+   ]
+  }
+ ],
+ "paths": [
+  {
+   "id": "p1",
+   "techniques": [
+    "ST-01",
+    "AP-05",
+    "DL-02"
+   ],
+   "desc": "An unauthorized real-face asset is replayed from a screen.",
+   "sophistication": "Low"
+  },
+  {
+   "id": "p2",
+   "techniques": [
+    "ST-01",
+    "AP-05",
+    "AR-03",
+    "DL-01"
+   ],
+   "desc": "An unauthorized real-face asset is printed and physically presented.",
+   "sophistication": "Low"
+  },
+  {
+   "id": "p3",
+   "techniques": [
+    "ST-03",
+    "AP-01",
+    "DL-01"
+   ],
+   "desc": "A fabricated non-human face is physically presented.",
+   "sophistication": "Low"
+  },
+  {
+   "id": "p4",
+   "techniques": [
+    "ST-01",
+    "AP-05",
+    "DL-01"
+   ],
+   "desc": "A real identity obtained without authorization is physically presented.",
+   "sophistication": "Low"
+  },
+  {
+   "id": "p17",
+   "techniques": [
+    "ST-01",
+    "AP-05",
+    "DL-02"
+   ],
+   "desc": "A real identity obtained without authorization is delivered through screen replay.",
+   "sophistication": "Low"
+  },
+  {
+   "id": "p5",
+   "techniques": [
+    "ST-01",
+    "AP-01",
+    "AR-02",
+    "DL-01"
+   ],
+   "desc": "A real identity is presented with physical occlusions.",
+   "sophistication": "Low"
+  },
+  {
+   "id": "p6",
+   "techniques": [
+    "ST-01",
+    "AP-07",
+    "AR-02",
+    "DL-01"
+   ],
+   "desc": "A real identity uses a physical disguise and added occlusions.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p7",
+   "techniques": [
+    "ST-01",
+    "AP-07",
+    "AR-07",
+    "DL-01"
+   ],
+   "desc": "A physical disguise is presented in lighting chosen to conceal its edges.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p8",
+   "techniques": [
+    "ST-01",
+    "AP-05",
+    "DL-03"
+   ],
+   "desc": "An unauthorized real-face asset is injected through a virtual camera.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p9",
+   "techniques": [
+    "ST-01",
+    "AP-05",
+    "DL-04"
+   ],
+   "desc": "An unauthorized real-face asset is submitted through API or SDK injection.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p15",
+   "techniques": [
+    "ST-01",
+    "AP-04",
+    "DL-03"
+   ],
+   "desc": "A phished real-face asset is injected through a virtual camera.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p16",
+   "techniques": [
+    "ST-01",
+    "AP-04",
+    "DL-04"
+   ],
+   "desc": "A phished real-face asset is submitted through API or SDK injection.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p10",
+   "techniques": [
+    "ST-02",
+    "AP-02",
+    "DL-03"
+   ],
+   "desc": "A face swap is injected through a virtual camera.",
+   "sophistication": "Medium"
+  },
+  {
+   "id": "p11",
+   "techniques": [
+    "ST-02",
+    "AP-02",
+    "AR-04",
+    "AR-05",
+    "DL-03"
+   ],
+   "desc": "A face swap has artifacts suppressed and camera noise added before injection.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p12",
+   "techniques": [
+    "ST-02",
+    "AP-03",
+    "AR-04",
+    "AR-05",
+    "AR-06",
+    "DL-03"
+   ],
+   "desc": "A generated face is cleaned, given camera noise, recompressed, and injected.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p13",
+   "techniques": [
+    "ST-01",
+    "AP-04",
+    "AR-12",
+    "AR-07",
+    "DL-04"
+   ],
+   "desc": "A phished real face is partially regenerated, color-matched, and directly submitted.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p14",
+   "techniques": [
+    "ST-02",
+    "AP-02",
+    "DL-05"
+   ],
+   "desc": "A face swap is delivered from a compromised device.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p18",
+   "techniques": [
+    "ST-02",
+    "AP-02",
+    "AR-06",
+    "AR-10",
+    "DL-03"
+   ],
+   "desc": "A face swap is transformed and recompressed before virtual-camera injection.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p19",
+   "techniques": [
+    "ST-02",
+    "AP-03",
+    "AR-06",
+    "AR-10",
+    "DL-03"
+   ],
+   "desc": "A generated identity is transformed and recompressed before virtual-camera injection.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p20",
+   "techniques": [
+    "ST-01",
+    "AP-04",
+    "AR-12",
+    "AR-06",
+    "AR-10",
+    "DL-04"
+   ],
+   "desc": "A phished face is inpainted, transformed, recompressed, and directly submitted.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p21",
+   "techniques": [
+    "ST-02",
+    "AP-02",
+    "AR-04",
+    "AR-05",
+    "AR-10",
+    "DL-03"
+   ],
+   "desc": "A face swap receives several evasion refinements before injection.",
+   "sophistication": "High"
+  },
+  {
+   "id": "p22",
+   "techniques": [
+    "ST-02",
+    "AP-03",
+    "AR-04",
+    "AR-05",
+    "AR-06",
+    "AR-10",
+    "DL-03"
+   ],
+   "desc": "A generated face receives several evasion refinements before injection.",
+   "sophistication": "High"
+  },
+  {
+   "id": "s1",
+   "techniques": [
+    "ST-01",
+    "AP-06",
+    "DL-01"
+   ],
+   "desc": "An identity mule completes verification with their real face.",
+   "sophistication": "—",
+   "signalOnly": true
+  },
+  {
+   "id": "s2",
+   "techniques": [
+    "ST-01",
+    "AP-01",
+    "DL-01"
+   ],
+   "desc": "A real lookalike submits an unchanged face.",
+   "sophistication": "—",
+   "signalOnly": true
+  }
+ ]
+}

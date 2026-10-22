@@ -1,8 +1,10 @@
 # threats.withpersona.com data
 
-> Source: live site https://threats.withpersona.com ("Persona FAS Gallery", app version 1.001), as of 2026-10-17. No authentication. Counts are from that date and will drift.
+> Source: live site https://threats.withpersona.com ("A Digital Taxonomy of Fraud", app version 1.001), as of 2026-10-17. No authentication. Counts are from that date and will drift.
 
 The gallery shows labelled selfie presentation and injection attack samples from the Hugging Face dataset `withpersona/persona-fas-bench-v1` (`https://huggingface.co/datasets/withpersona/persona-fas-bench-v1`). Each sample is an attack image labelled with the threat taxonomy (`references/taxonomy.md`). The images remain subject to the terms of the gallery and the dataset; this repository's license does not cover them. Contact on the site: research@withpersona.com.
+
+The gallery is a subset of that dataset: about 3,800 of its roughly 21,000 attack images (the dataset README says 21,056 in this release; the data card says 21,121). Physical categories are nearly complete in the gallery; most of the gap is synthetic. Counts here describe the gallery, not the dataset.
 
 ## `GET /gallery-index.json`
 

@@ -1,6 +1,6 @@
 # Threat taxonomy and attack paths
 
-> Source: https://threats.withpersona.com (Persona FAS Gallery, app version 1.001), as of 2026-10-17; the same content is in `data/taxonomy.json`. Index names are from `/gallery-index.json` → `codes`.
+> Source: https://threats.withpersona.com (A Digital Taxonomy of Fraud, app version 1.001), as of 2026-10-17; the same content is in `data/taxonomy.json`. Index names are from `/gallery-index.json` → `codes`.
 
 Every sample is tagged with codes from four stages an attacker moves through: choose a **Subject** (ST), obtain the selfie (**Asset Procurement**, AP), alter it (**Asset Refinement**, AR), and submit it (**Delivery**, DL). A sample has one ST and one AP, any number of AR (`arCount`; AR-01 means none) and one or more DL. Where the gallery index and the app use different names for a code, both are shown.
 

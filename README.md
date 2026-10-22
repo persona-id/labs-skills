@@ -6,7 +6,7 @@ Agent skills built from Persona Research work. Each directory is one self-contai
 |---|---|---|
 | [`fraud-control-matrix`](fraud-control-matrix/SKILL.md) | Answers which controls cover an attack technique, what a control stack leaves exposed, and which Persona capability implements a control — 6 stages, 31 techniques, 24 controls, 8 signal families, 239 Persona capabilities. Asks a few questions about your setup to find your gaps. Works offline. | https://labs.withpersona.com/fraud-controls (snapshot, October 2026) |
 | [`persona-atlas`](persona-atlas/SKILL.md) | Fetches live age assurance and child online safety laws, and digital IDs and EUDI wallets, from Persona Atlas by country, US state, status, topic or responsible party. Not a KYC/AML regulation source. | https://atlas.withpersona.com (live) |
-| [`selfie-threat-benchmark`](selfie-threat-benchmark/SKILL.md) | Pulls live samples, counts, taxonomy codes and attack paths from the Persona FAS Gallery of selfie presentation and injection attacks. | https://threats.withpersona.com (live) |
+| [`selfie-threat-benchmark`](selfie-threat-benchmark/SKILL.md) | Pulls live samples, counts, taxonomy codes and attack paths from A Digital Taxonomy of Fraud, a gallery of selfie presentation and injection attacks. | https://threats.withpersona.com (live) |
 
 Each `SKILL.md` has a list of example questions.
 

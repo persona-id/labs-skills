@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Query the Persona FAS Gallery at https://threats.withpersona.com: labelled selfie presentation and injection
+// Query A Digital Taxonomy of Fraud at https://threats.withpersona.com: labelled selfie presentation and injection
 // attack samples. Live data: /gallery-index.json (every sample with its category, attack tags and complexity),
 // minus the samples the gallery itself hides. Taxonomy and attack paths come from data/taxonomy.json, a copy of
 // the gallery's taxonomy. No auth. Node 20+, no deps.
